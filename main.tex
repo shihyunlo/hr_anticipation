@@ -70,16 +70,16 @@ In robotics, recent advances have allowed long-term autonomy for indoor mobile
 robot navigation, which has raised interest in the development of service 
 robots that provide assistance to humans during daily activities. To achieve 
 this objective, the robots need to be able to navigate smoothly among pedestrians, while 
-not interfering with their ongoing activities. This problem involves well 
-modeling of the dynamics in human-robot interaction, where individuals have 
+not interfering with their ongoing activities. This problem involves 
+modeling well the dynamics in human-robot interaction, where individuals have 
 independent goals to reach and potential collisions need to be avoided. 
 
 % [human robot interaction scenarios]
 Consider a robot navigating in a busy atrium with people walking towards 
 different destinations. There is generally limited sensing of nearby agents, 
 both by the human pedestrians and by the robot. It is not enough to reactively 
-avoid imminent collisions. Yet,  
-with motion predictions, collision avoidance algorithms fail to find a path in 
+avoid imminent collisions. However, when predicting into the future, 
+collision avoidance algorithms often fail to find a path in 
 densely crowded environments, posed as the "freezing robot 
 problem"~\cite{trautman2010unfreezing}, which lacks the consideration of reactive 
 dynamics between agents. For example, in human pedestrian 
@@ -158,18 +158,20 @@ the joint efficiency that acts legibly to facilitate smooth avoidance.
     \label{fig:p2}
   }
   \end{center}
-  \vspace{-0.3em}
+  \vspace{-0.85em}
   \caption{The two pictures illustrate the common patterns of human 
-    pedestrians traversing the other agent to avoid potential collision: {\bf (a)} to 
+    pedestrians traversing the other agent to avoid potential collision (with robot 
+    moving forward, pedestrian moving to the left): {\bf (a)} to 
     decelerate and wait for the other agent passing in front, 
     {\bf (b)} to accelerate and exceed the other agent from its front.Two styles of traversal trade off between total path lengths and end speeds. While slowing down to wait is more energy efficient, speeding up to exceed is more time efficient to future travel. 
-    }
+    }  
+  \vspace{-0.5em}
 \label{fig1}
 \end{figure}
 
 \section{Related Work}
 \label{sec:related}
-\vspace{-0.3em}
+\vspace{-0.4em}
 % recent advance in crowd navigation modeling
 % a) physics-based modeling of pedestrian spacing 
 % b) inverse optimal planning techniques
@@ -225,7 +227,7 @@ decision making over passive ($a^p$) or active action ($a^a$) by logistic regres
 \begin{equation}
 p(a=a^p|x,u^o) \sim \frac{1}{1+e^{w^Tf(x,u^o)}}, 
 \end{equation}
-where $x$ is the overall system state, including the pedestrian and confronting agent, and $f(x)$ is a feature function, capturing the relative dynamics of the two agents.
+where $x$ is the overall system state, including the pedestrian and confronting agent, and $f(x,u)$ is a feature function, capturing the relative dynamics of the two agents.
 
 Preliminary results have suggested the dependency of people's traversal styles 
 on different walking patterns. For example, people who often traverse from 
