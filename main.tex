@@ -52,7 +52,32 @@
 \maketitle
 
 \begin{abstract}
-Mobile robot navigation in human populated environments has been widely studied in the past two decades. Significant improvements on this technology have suggested promising future to introduce mobile service robots in human workspace that help with their daily activities. State-of-the-art approaches have shown real-world deployment that can safely navigate a robot through dense crowds~\cite{trautman2015robot, pfeiffer2016predicting}. Still, human-robot interaction remains lagging in the field, for the robots to navigate in a human-friendly manner, which requires the ability to identify human intentions in collision-risky situations, and to avoid accordingly, “legibly”~\cite{dragan2013legibility}. Towards this ability, prediction of human motion in crowds is necessary. Yet, none of the study has been conducted taking into human-robot interaction into consideration, resulting in unexpected behaviors during deployment, which largely degraded the planning performance. Towards real-world deployment, it is essential to distinguish irrational agents, who intentionally block the robot during navigation. To achieve so, we start with the study of human-robot interaction on rational agents, and model their planning as solving a constrained optimization problem, which involves the prediction of human preferences when traversing a robot in collision-risky scenarios. Preliminary results have suggested large dependency of people’s traversal behaviors on their regular walking features. 
+Mobile robot navigation in human populated environments has been
+widely studied in the past two decades. Significant improvements in
+this technology suggest a promising future for introducing mobile
+service robots in human workspaces that help with daily
+activities. State-of-the-art approaches have shown real-world
+deployments of robots that can safely navigate through dense
+crowds~\cite{trautman2015robot, pfeiffer2016predicting}. Still, most
+robots lacke the ability to navigate in a human-friendly manner, which
+requires the ability to identify human intentions in situations with
+high risk of collision, and to avoid such collisions
+“legibly”~\cite{dragan2013legibility}. Most studies to date do not
+take human-robot interaction into consideration, resulting in
+unexpected human behaviors during deployment, and complicates
+planning.  In particular, real-world deployment requires
+distinguishing humans who are trying to pass the robot from those who
+intentionally block the robot during navigation.  To this end, we
+model the planning of pedestrians who are trying to pass the robot as
+solving a constrained optimization problem, arriving at their
+destination as quickly as possible, while remaining sufficiently far
+away from the robot so as not to risk colliding.  People that deviate
+from an expected plan can be considered to be interacting directly
+with (e.g.\ blocking) the robot.  Preliminary results show that within
+this framework, people's paths for passing the robot depend heavily on
+the robot's behavior policy, necessitating an incremental training
+paradigm that generated expected paths that react to the robot's
+current policy, and vice versa.
 
 \end{abstract}
 
