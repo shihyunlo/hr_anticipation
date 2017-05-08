@@ -51,9 +51,10 @@
 
 \maketitle
 
-%\begin{abstract}
-%\commentl{TODO}
-%\end{abstract}
+\begin{abstract}
+Mobile robot navigation in human populated environments has been widely studied in the past two decades. Significant improvements on this technology have suggested promising future to introduce mobile service robots in human workspace that help with their daily activities. State-of-the-art approaches have shown real-world deployment that can safely navigate a robot through dense crowds~\cite{trautman2015robot, pfeiffer2016predicting}. Still, human-robot interaction remains lagging in the field, for the robots to navigate in a human-friendly manner, which requires the ability to identify human intentions in collision-risky situations, and to avoid accordingly, “legibly”~\cite{dragan2013legibility}. Towards this ability, prediction of human motion in crowds is necessary. Yet, none of the study has been conducted taking into human-robot interaction into consideration, resulting in unexpected behaviors during deployment, which largely degraded the planning performance. Towards real-world deployment, it is essential to distinguish irrational agents, who intentionally block the robot during navigation. To achieve so, we start with the study of human-robot interaction on rational agents, and model their planning as solving a constrained optimization problem, which involves the prediction of human preferences when traversing a robot in collision-risky scenarios. Preliminary results have suggested large dependency of people’s traversal behaviors on their regular walking features. 
+
+\end{abstract}
 
 \IEEEpeerreviewmaketitle
 
@@ -146,11 +147,8 @@ their destination as quickly as possible. This approach provides us the
 capability to predict which path the 
 pedestrian is prone to take to avoid, at what speed pattern. The robot can 
 then optimize the joint efficiency by avoiding responsively to their 
-preferences, ``legibly''~\cite{dragan2013legibility}, such that the pedestrian 
-is clear about the robot's intention. A cooperative behavior is 
-then expected on rational pedestrians, following the predicted traversal 
-behaviors from our model; a non-cooperative behavior, like intentional blocking, can 
-therefore be distinguished if not following any traversal patterns.
+preferences, legibly, such that the pedestrian 
+is clear about the robot's intention. Our model then predicts cooperative behavior from rational pedestrians; non-cooperative behavior, such as intentional blocking, can therefore be distinguished if the pedestrian does not follow any expected patterns.
 
 %Towards the deployment of a service robot in real world, the robust guarantee of safety during human robot interaction is important. Still, state-of-the-art modeling of this joint dynamics has limited capability when pedestrians engage in behaviors not presented in the training data. With complex model and unbalanced training data, the prediction model is under high risk of overfitting.
 
