@@ -59,7 +59,7 @@ service robots in human workspaces that help with daily
 activities. State-of-the-art approaches have shown real-world
 deployments of robots that can safely navigate through dense
 crowds~\cite{trautman2015robot, pfeiffer2016predicting}. Still, most
-robots lacke the ability to navigate in a human-friendly manner, which
+robots lack the ability to navigate in a human-friendly manner, which
 requires the ability to identify human intentions in situations with
 high risk of collision, and to avoid such collisions
 “legibly”~\cite{dragan2013legibility}. Most studies to date do not
@@ -87,19 +87,20 @@ current policy, and vice versa.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\vspace{-0.2em}
 \section{Introduction}
-\vspace{-0.3em}
+\vspace{-0.4em}
 \label{sec:intro}
 \noindent
 % [mobile robot navigation advances in dynamic environment]
-In robotics, recent advances have allowed long-term autonomy for indoor mobile 
-robot navigation, which has raised interest in the development of service 
-robots that provide assistance to humans during daily activities. To achieve 
-this objective, the robots need to be able to navigate smoothly among pedestrians, while 
-not interfering with their ongoing activities. 
-%This problem involves 
-%modeling well the dynamics in human-robot interaction, where individuals have 
-%independent goals to reach and potential collisions need to be avoided. 
+%In robotics, recent advances have allowed long-term autonomy for indoor mobile 
+%robot navigation, which has raised interest in the development of service 
+%robots that provide assistance to humans during daily activities. To achieve 
+%this objective, the robots need to be able to navigate smoothly among pedestrians, while 
+%not interfering with their ongoing activities. 
+%%This problem involves 
+%%modeling well the dynamics in human-robot interaction, where individuals have 
+%%independent goals to reach and potential collisions need to be avoided. 
 
 % [human robot interaction scenarios]
 Consider a robot navigating in a busy atrium with people walking towards 
@@ -119,7 +120,7 @@ To plan efficiently in dense crowds at the same time maintaining
 human-friendliness and safety, it is crucial to have good models of human 
 responses to the robot's maneuvers. Many approaches have been proposed in the 
 past decade to simulate human pedestrian dynamics~\cite{lamarche2004crowd, 
-  treuille2006continuum, %paris2007pedestrian, 
+  %treuille2006continuum, %paris2007pedestrian, 
 karamouzas2009predictive}.
 %Accordingly, robot planning in crowds has shown efficient performance in simulation
 Look ahead planning, that includes a model of how others will react to one's 
@@ -153,6 +154,35 @@ behaviors, such as blocking). To model this problem, we propose to first
 enable prediction of human traversal behaviors when encountering potential 
 collisions, shown in Fig.~\ref{fig1}. 
 
+
+\begin{figure}[t]
+  \begin{center}
+  \hspace*{-1em}
+  \subfigure[0.45\columnwidth][] {
+    \includegraphics[width=0.5\columnwidth]{p1.png}
+    \label{fig:p1}
+  }\hspace*{-0.03em}
+  \subfigure[0.45\columnwidth][] {
+    \includegraphics[width=0.5\columnwidth]{p2.png}
+    \label{fig:p2}
+  }
+  \end{center}
+  \vspace{-0.85em}
+  \caption{The two pictures illustrate the common patterns of human 
+    pedestrians passing the other agent (here the robot) to avoid a potential 
+    collision (with the robot 
+    moving towards the door, the pedestrian moving to the stair case at the left): {\bf (a)} to 
+    decelerate and wait for the robot passing in front, 
+    {\bf (b)} to accelerate and pass in front of the robot. Two styles of 
+    traversal trade off between total path lengths and end speeds. While 
+    slowing down to wait results in shorter paths, speeding up to pass in 
+    front is also commonly observed when people navigate in crowds. 
+    }  
+  \vspace{-0.6em}
+\label{fig1}
+\end{figure}
+
+
 %When the robot performs 
 %``legibly''~\cite{dragan2013legibility} in those 
 %situations, non-cooperative behaviors (intentional blocking) can be identified if not 
@@ -184,33 +214,8 @@ is clear about the robot's intention. Our model then predicts cooperative behavi
 
 % introduce this work that does not overfit
 
-\begin{figure}[tb]
-  \begin{center}
-  \hspace*{-1em}
-  \subfigure[0.45\columnwidth][] {
-    \includegraphics[width=0.5\columnwidth]{p1.png}
-    \label{fig:p1}
-  }\hspace*{-0.03em}
-  \subfigure[0.45\columnwidth][] {
-    \includegraphics[width=0.5\columnwidth]{p2.png}
-    \label{fig:p2}
-  }
-  \end{center}
-  \vspace{-0.85em}
-  \caption{The two pictures illustrate the common patterns of human 
-    pedestrians passing the other agent (here the robot) to avoid a potential 
-    collision (with the robot 
-    moving towards the door, the pedestrian moving to the stair case at the left): {\bf (a)} to 
-    decelerate and wait for the robot passing in front, 
-    {\bf (b)} to accelerate and pass in front of the robot. Two styles of 
-    traversal trade off between total path lengths and end speeds. While 
-    slowing down to wait results in shorter paths, speeding up to pass in 
-    front is also commonly observed when people navigate in crowds. 
-    }  
-  \vspace{-0.5em}
-\label{fig1}
-\end{figure}
 
+\vspace{-0.2em}
 \section{Related Work}
 \label{sec:related}
 \vspace{-0.4em}
@@ -228,7 +233,6 @@ makes use of inverse optimal planning
 techniques~\cite{ziebart2009planning,henry2010learning,vasquez2014inverse} to 
 model pedestrian dynamics by learning their policies assuming global observations and 
 rational behaviors.
-
 % a,b ignore the interactive dynamics in which one player's action affects the other's 
 % c) joint decision making process
 While the above approaches have shown to predict pedestrian motions 
@@ -239,8 +243,7 @@ actions.
 %While the pedestrians treat the robot as an agent, they plan 
 %accordingly to robot's motion. 
 
-In this regard, a multi-player game setting including both human and robot actions into the joint state space was proposed in a Gaussian Process regression model and evaluated on a mobile robot in a fully-observed environment~\cite{trautman2010unfreezing}. This game setting has also shown significant results in autonomous cars through the consideration of human actions into their model to achieve communicative robot behaviors~\cite{sadigh2016planning}.
-
+In this regard, a multi-player game setting including both human and robot actions into the joint state space was proposed and evaluated on a mobile robot in a fully-observed environment~\cite{trautman2010unfreezing}. This game setting has also shown significant results in autonomous cars through the consideration of human actions into their model to achieve communicative robot behaviors~\cite{sadigh2016planning}.
 % d) prediction using offline training data does not always work: data may be from rational agents. Further, interactive data may only go from a small portion of state space, excited by pre-defined robot behavior 
 Still, all of the above work are built from data collected by observing human-human 
 interaction, which has degraded planning performance while encountering unmodeled 
@@ -252,7 +255,9 @@ intentions, and then plan responsively to their actions. We propose to achieve
 better human-robot interaction in crowds by learning a predictive model 
 iteratively through online interaction, and propose a predictive model 
 that generates plans to avoid dynamic obstacles based on personal walking features. 
+\vspace{-0.2em}
 \section{Methodology}
+\vspace{-0.4em}
 We model the pedestrians as moving according to the solution to a constrained optimization 
 problem, and formulate the constraints on the temporal collisions with 
 (adaptive) safety margins, from a first person point of view. We assume that 
@@ -266,10 +271,10 @@ shown in Fig.~\ref{fig:p1}), as well as to speed up and pass in front by postpon
 the expected intersection (active action, $a^a$ as shown in Fig.~\ref{fig:p2}).   
 
 Note that, from the path planning perspective, there exists a third homotopy 
-class to pass from behind by turning some degrees towards the other agent, 
-resulting in earlier traversal time. This maneuver is not commonly seen in 
-crowds simply 
-because it results in a longer path and raises the risk of breaking into the 
+class to pass from behind,
+%by turning some degrees towards the other agent, 
+resulting in earlier traversal time. This maneuver is seldom seen in 
+crowds because it results in longer path and raises the risk of breaking into the 
 other agent's safety margin. 
 
 Based on the continuous control input $u^o$ (here the robot acceleration), the 
@@ -294,7 +299,7 @@ and responsively to the perceived human pedestrian traversal style. When the
 prediction fails and the risk of collision goes up, it is quite likely that 
 the pedestrian is intentionally blocking the robot.
 %The decisions of pedestrians are modeled on both waypoint selections (mixture model on different homotopy classes, based on speed, relative speed, spacing, and safety margins) and speed pattern adaptation (adaptive slow down or speed up to avoid collision, based on the same features). 
-
+\vspace{-0.1em}
 {\footnotesize
 \bibliographystyle{plainnat}
 \bibliography{reference}
