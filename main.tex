@@ -39,15 +39,14 @@
 %\title{Towards Modeling Real-world Human-robot Interaction that Prevents Overfitting}
 \title{Iterative Human-Aware Mobile Robot Navigation}
 
-\author{Paper-ID}
 
-%\author{
-%    \authorblockN{Shih-Yun Lo, and Peter Stone}
-%    \authorblockA{
-%        University of Texas at Austin\\
-%        {\tt \{yunl;;pstone\}@cs.utexas.edu}
-%    }
-%}
+\author{
+    \authorblockN{Shih-Yun Lo, Benito Fernandez, and Peter Stone}
+    \authorblockA{
+        University of Texas at Austin\\
+        {\tt \{yunl;pstone\}@cs.utexas.edu;benito@utexas.edu}
+    }
+}
 
 
 \maketitle
@@ -88,9 +87,8 @@ current policy, and vice versa.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\vspace{-0.2em}
 \section{Introduction}
-\vspace{-0.4em}
+\vspace{-0.3em}
 \label{sec:intro}
 \noindent
 % [mobile robot navigation advances in dynamic environment]
@@ -256,51 +254,270 @@ intentions, and then plan responsively to their actions. We propose to achieve
 better human-robot interaction in crowds by learning a predictive model 
 iteratively through online interaction, and propose a predictive model 
 that generates plans to avoid dynamic obstacles based on personal walking features. 
-\vspace{-0.2em}
+\vspace{-0.1em}
 \section{Methodology}
-\vspace{-0.4em}
+\vspace{-0.1em}
 We model the pedestrians as moving according to the solution to a constrained optimization 
 problem, and formulate the constraints on the temporal collisions with 
 (adaptive) safety margins, from a first person point of view. We assume that 
 people have some fuzzy idea of the velocity of the other agent $v^o$, of their 
-own velocity $v^p$, and the location where an expected collision will happen. 
+own velocity $v^p$, and the location where an expected collision will happen $p^{col}$:
+\begin{equation}
+min_{u_n \dots u_N} \Sigma^N_{t=n} \small{dx_t^TQdx_t + u_t^TRu_t + \omega C_{soc}+(x_N-x^G)^TP(x_N-x^G)}
+\end{equation}
+
 The temporal constraint divides the 2D planning configuration space into two 
-homotopy classes, which corresponds to two options of traversal decision, 
+homotopy classes, which leads to two commonly observed traversal options, 
 considering a two-player scenario: to slow down and traverse from behind by 
 freeing the expected occupation at intersection (passive action, $a^{p}$, as 
 shown in Fig.~\ref{fig:p1}), as well as to speed up and pass in front by postponing 
-the expected intersection (active action, $a^a$ as shown in Fig.~\ref{fig:p2}).   
+the expected intersection (active action, $a^a$ as shown in Fig.~\ref{fig:p2}).
 
 Note that, from the path planning perspective, there exists a third homotopy 
 class to pass from behind,
 %by turning some degrees towards the other agent, 
 resulting in earlier traversal time. This maneuver is seldom seen in 
-crowds because it results in longer path and raises the risk of breaking into the 
-other agent's safety margin. 
+crowds because of the inconsistency between intention (passive traversal from 
+behind) and motion pattern (active traversal by speeding up). It also results in 
+longer path and raises the risk of breaking in front of the other agent's 
+safety margin. 
 
+%% state space representation, 
+% from robot's perspective, with a figure showing desired vel, goal..etc
+
+\subsection{Human Traversal Decision Hypothesis} 
+From an optimal path planning perspective, we can assign costs to 
+the observed path, and there are different approaches to explain or predict the likelihood of such path based on assumptions on the decision making process~\cite{ratliff2006maximum, ziebart2008maximum}, or social cost function formulations~\cite{kruse2012legible}. For example, in \cite{trautman2010unfreezing},
+the authors collected data on human navigation in crowds, and proposed the Gaussian 
+process mixture model to predict in real-time the pedestrian paths. Due to the 
+goal-imposed behavior formulation (which highly limits the applicability of 
+their approach in different domains), this model is also used during robot 
+planning. 
+
+From an inverse optimal planning perspective, with the constrained 
+optimization setting on human path planning subject to the other agent 
+crossing, we can learn the cost function of human traversal behaviors. More specifically, with the aid of social proximity model and social cost function, and the intuition from social 
+force model on travel directions, we can formulate social-friendly cost model on 
+human crossing:
+%%%%
+and learn the coefficients that best describe the observed behaviors.  
+%% interaction comparison - social force, social proximity, adaptive social 
+%% spacing. The insights in human robot interaction: people tend to travel 
+%% from in front, people have different social preferences (w/ people, w/ 
+%% robots), people having higher repelling/costs traveling the opposite 
+%% direction with the crowd  
+
+However, as suggested in %%adaptive social spacing
+people have different degrees of interest in interaction, which we also 
+observed in our robot's real-world deployment. Beyond interest, we also 
+observed different motion 
+patterns when humans traverse a robot, which suggests different perceptions and 
+reactions on autonomous navigating agents. For example, when people observe a 
+potential collision, the psychology tension to change maneuvers has personal 
+differences. Same is true for the safety margin (minimum distance to respond 
+to collision) people tend to keep from other agents, subject to different walk 
+speed and crowd density. 
+Going back to the formulation 
+suggested in Eq., it suggests that different people have different weights on 
+the cost terms, resulting in different social preferences in collision-risky 
+scenarios. 
+
+Coming back to the application of pedestrian motion prediction and the 
+robot planning accordingly, if one were to extract the motion features of a 
+person given past observation, to predict the weights on the cost function for 
+social preferences, the overall cost function formulation would be to learn 
+a functional mapping $w$ as a function of the dynamic features of the person. 
+
+One solution to maintain the tractability of the model, especially under 
+limited data from real-world experience, is to enforce sparsity of the mapping 
+function $w$. This can be explained as to limit the variety of traversal 
+preferences.
+\subsection{Intention Expression and Opponent Response Hypothesis during Human Traversal}
+When observing human navigation in crowds, it is commonly seen that the 
+\textit{dynamic patterns} of motion, such as speed variations, are coupled 
+with intention. This somehow differs from the 
+definition of legibility as being goal-expressive in %
+, and falls back to the early description of legibility as to be intention 
+expressive and predictable: we slow down to wait for the other crossing agent 
+(passive traversal $a^p$), which often leads to short paths that do not much 
+deviate from the original undisturbed paths (also suggested in %
+). Or we speed up to show the 
+aggressive intention to temporally occupy the crossing agent's workspace (active 
+traversal $a^a$). 
+
+While intention affects the speed pattern of the path taken, it also has 
+correlation with interaction preferences, which correspond to different $\omega$ 
+values. For example, aggressive people, defined as people who prefer to actively traverse 
+other agents, tend to react early once they observe potential collisions and 
+to keep a large safety margin from the others. The choice of optimal path 
+differs with different intentions; same is true for the homotopy class the 
+path belongs to.
+
+People usually pose the hypothesis that, during navigation in crowds, other 
+people are able to \textit{understand intention expressive motions} and \textit{respond safely 
+and friendly} 
+accordingly. However, during human-robot interaction, this hypothesis may not 
+necessarily hold, based on our preliminary study on the robot's real-world 
+deployment. It was common feedback we got that people described themselves as 
+``aware'' of the robot, which we interpreted as ``requiring constant 
+attention''. They also suggested that they were not capable of navigating as 
+comfortably as in human crowds.
+\begin{figure}[tb]
+  \begin{center}
+  \hspace*{-2em}
+    \includegraphics[width=1.05\columnwidth]{images/behavior_change.pdf}
+  \hspace*{-2em}
+  \vspace*{-1.5em}
+  \end{center}
+  \vspace{-0.05in}
+  \caption{We propose this schematic illustration of human action model based 
+    on the psychological process analysis on behavioral changes in %%
+    Here, we further distinguish stimulus by various levels of response time 
+    (psychology tension) 
+    }
+\label{behavior_change}
+\end{figure}
+\subsection{Human Decision Model considering Opponent Status and Intention Hypothesis}
+We therefore propose to model people's decision making process during 
+traversal considering both self stimulus and opponent agent hypothesis, as 
+shown in Fig..%% 
+More specifically, we consider sources of stimulus based on different levels of 
+response time and frequency of variation. For example, goal and interest are 
+usually fixed during the navigation process. Immediate instances such as 
+unexpected turns of nearby agents cause direct threat and therefore stimulate 
+responses quickly.
+
+Our subject, which is human traversal decision in crowds, is considered as potential 
+threat due to possible collision. It has certain response time (people don't 
+react right after observing a confronting agent), and it relies assumptions on 
+opponent behaviors to make the traversal decision that maximizes the person's 
+own utility. 
+
+Here, we list out the opponent assumptions on his status, defined as the 
+state with abstract psychological description, and intention, defined as the potential 
+action of interest. The opponent status can be estimated based on past 
+observations, such as to distinguish if she is wondering in the hallway, or 
+traveling towards a specific goal. The intention is what we care about the most at 
+the end: is she going to cross me in the front or wait?
+
+In human-robot interaction, the status goes 
+beyond: is the person comfortable with the robot? Does she considers the robot 
+to be safe? As for intentions, we might further consider: is the person 
+blocking, or following the robot? 
+
+In each case, we incorporate the opponent agent's influence into the decision 
+making process. With that said, his action is taken into account while people 
+consider their own actions. 
+\subsection{Preliminary Results}
+%heading variation suggests interactability
+%different safety margins on traversal type decision
+%psychology tension oh reaction time
+%% however, more specifically: who have what interaction preferences? we don't 
+%% know their intention, neither hypothesis of the robot. how can we achieve 
+%% intent expressive motion in a human-friendly way?
+Based on the above, we first study:
+\begin{enumerate}
+\item the opponent hypothesis in human-robot interaction, assuming 
+  self-interested behaviors in a game theory setting, and
+\item the dynamic patterns during human traversal around a robot, to 
+  understand their traversal intention expression and the expectation of robot 
+  response (so we can design robot's legible motions).
+\end{enumerate}
+
+We conduct experiments in an open atrium with the robot following pre-assigned 
+routes. We first show the participants how the robot runs the task, and then 
+ask them to travel between four sets of waypoints that collision may happen in 
+between. Each participant takes the experiment twice, with different values of 
+safety margin ($0.3m$ and $1m$) that the robot keeps from the collision. Six 
+people were invited in the test, with no prior experience to interact with the 
+tested platform.
+
+The results that record:
+\begin{enumerate}
+  \item close-distance interaction trajectories,
+  \item velocity profile over time,
+  \item heading profile (velocity direction) over time,
+  \item velocity profile over the relative distance between two agents,
+  \item heading profile over the relative distance between two agents,
+\end{enumerate}
+are shown in Fig.%%
+
+
+After all, we care about predicting human motion in a cost-effective way, and 
+the intention expression when people's behavior are not well 
+predicted. %% more explanation
+%%graphs of dynamics results
+\begin{figure*}[tb]
+  \begin{center}
+  \hspace*{-6em}
+    \includegraphics[width=1.2\textwidth]{images/dynamic_result2.png}
+  \hspace*{-1em}
+  \vspace*{-1.5em}
+  \end{center}
+  \vspace{-0.1in}
+  \caption{We propose this schematic illustration of human action model based 
+    on the psychological process analysis on behavioral changes in %%
+    Here, we further distinguish stimulus by various levels of response time 
+    (psychology tension) 
+    }
+\label{behavior_change}
+\end{figure*}
+\subsection{Mathematical Models}
+%preferences
+
+%dynaimc transition (how they would react to robot legible motions)
+
+
+
+
+
+
+%% definition of dynamics transition(our model applies to goal-oriented pople) 
+%- whenever the person changes the maneuver to avoid the other agent (also, 
+%when do they express intention, which they may express?)
+% need to estimate collision location, response region, and safety margin
+
+%% human-robot interaction intent hypothesis: different classes of people have 
+%different social interactions, adaptive KF
+
+%%intent expressive motion design - the leading agent
+
+
+
+
+%% logistic regression on decision manifold
 Based on the continuous control input $u^o$ (here the robot acceleration), the 
 relative distance $d^{rel}$, and the adaptive safety margin $d^{saf}$ to 
 allow for unexpected behaviors of the robot, we model the pedestrian 
 decision making over passive ($a^p$) or active action ($a^a$) by logistic regression,
 \begin{equation}
-p(a=a^p|x,u^o) \sim \frac{1}{1+e^{w^Tf(x,u^o)}}, 
+p(a=a^p|x,u^o) \sim \frac{1}{1+e^{w^Tf(x,u^o)}}, %%they should be of past trajectory?
 \end{equation}
 where $x$ is the overall system state, including the pedestrian and confronting agent, and $f(x,u)$ is a feature function, capturing the relative dynamics of the two agents.
 
-Preliminary results have suggested the dependency of people's traversal preferences 
-on different regular walking patterns. For example, people who often traverse from 
-the front, have a higher regular walking pace. Since the traversal 
-behavior also depends on the robot's observed behaviors, we collect data under 
-different robot navigation policies. In this workshop, we intend to show the 
-robustness of the proposed pedestrian traversal decision predictor. We also 
-intend to show the learnt interactive dynamics during traversal, through phase 
-space analysis on velocity changes and positions. The resultant optimal 
-policy that maximizes both agents' efficiency is expected to act legibly 
-and responsively to the perceived human pedestrian traversal style. When the 
-prediction fails and the risk of collision goes up, it is quite likely that 
-the pedestrian is intentionally blocking the robot.
-%The decisions of pedestrians are modeled on both waypoint selections (mixture model on different homotopy classes, based on speed, relative speed, spacing, and safety margins) and speed pattern adaptation (adaptive slow down or speed up to avoid collision, based on the same features). 
-\vspace{-0.1em}
+%\section{Preliminary Results}
+%Preliminary results have suggested the dependency of people's traversal preferences 
+%on different regular walking patterns. For example, people who often traverse from 
+%the front, have a higher regular walking pace. Since the traversal 
+%behavior also depends on the robot's observed behaviors, we collect data under 
+%different robot navigation policies. In this workshop, we intend to show the 
+%robustness of the proposed pedestrian traversal decision predictor. We also 
+%intend to show the learnt interactive dynamics during traversal, through phase 
+%space analysis on velocity changes and positions. The resultant optimal 
+%policy that maximizes both agents' efficiency is expected to act legibly 
+%and responsively to the perceived human pedestrian traversal style. When the 
+%prediction fails and the risk of collision goes up, it is quite likely that 
+%the pedestrian is intentionally blocking the robot.
+%%The decisions of pedestrians are modeled on both waypoint selections (mixture model on different ho%motopy classes, based on speed, relative speed, spacing, and safety margins) and speed pattern adapt%ation (adaptive slow down or speed up to avoid collision, based on the same features). 
+\section{Future Work}
+Transition pattern prediction, transition manifold selection prediction, 
+1.if legible motion would improve the transition smoothness, has the effect of 
+enhanced friendliness
+2.iterative learning on transition model with intent-expressive motions
+%% is it ok to cross from behind? From the social force, yes; from the social 
+%% proximity on visibility - no. 
+
+
 {\footnotesize
 \bibliographystyle{plainnat}
 \bibliography{reference}
