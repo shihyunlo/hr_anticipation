@@ -103,42 +103,52 @@ current policy, and vice versa.
 %%independent goals to reach and potential collisions need to be avoided. 
 
 % [human robot interaction scenarios]
-Consider a robot navigating in a busy atrium with people walking towards 
-different destinations. There is generally limited sensing of nearby agents, 
-both by the human pedestrians and by the robot. It is not enough to reactively 
-avoid imminent collisions. However, when predicting into the future, 
-collision avoidance algorithms often fail to find a path in 
-densely crowded environments, sometimes referred to as the "freezing robot 
-problem"~\cite{trautman2010unfreezing}. For example, in human pedestrian 
-navigation, it is commonly seen for agents to walk in front of one 
-another to maximize their own travel efficiency, assuming other pedestrians 
-are aware of the workspace occlusion and respond safely. Can the robot act 
-the same way, while optimizing the joint efficiency of both agents?  
+Consider a robot navigating in a busy atrium with people walking
+towards different destinations. 
+%Both the robot and the pedestrians
+%generally have limited sensing of nearby agents.  
+%In general, it is not enough for the robot to
+%reactively avoid imminent collisions. 
+To navigate robustly, it must both predict the motions of approaching pedestrians, and plan its own motions so as not to collide with their predicted paths.
+When doing so, it is not sufficient to consider the paths of pedestrians as fixed.  Rather, the robot sneeds to recognize that its own behaviors can impact those of the pedestrians.
+That is, the robot and pedestrians are all a part of a tightly coupled multiagent navigation problem.~\cite{trautman2010unfreezing}.  In this paper, we consider how to enable a robot to start by modeling a person's intended trajectory, and then take \emph{legible} navigation actions to optimize the expected joint efficiency of the robot's and the pedestrian's motions, after taking into account the pedestrian's reactions to the robot's motions.
+
+%However, when predicting into
+%the future, collision avoidance algorithms often fail to find a path
+%in densely crowded environments, sometimes referred to as the
+%"freezing robot problem"~\cite{trautman2010unfreezing}. For example,
+%in human pedestrian navigation, it is commonly seen for agents to walk
+%in front of one another to maximize their own travel efficiency,
+%assuming other pedestrians are aware of the workspace occlusion and
+%respond safely. Can the robot act the same way, while optimizing the
+%joint efficiency of both agents?
 
 % [state of the art robot navigation in crowd]
-To plan efficiently in dense crowds at the same time maintaining 
-human-friendliness and safety, it is crucial to have good models of human 
-responses to the robot's maneuvers. Many approaches have been proposed in the 
+%To plan efficiently in dense crowds at the same time maintaining 
+%human-friendliness and safety, it is crucial to have good models of human 
+%responses to the robot's maneuvers. 
+Many approaches have been proposed in the 
 past decade to simulate human pedestrian dynamics~\cite{lamarche2004crowd, 
   %treuille2006continuum, %paris2007pedestrian, 
 karamouzas2009predictive}.
 %Accordingly, robot planning in crowds has shown efficient performance in simulation
-Look ahead planning, that includes a model of how others will react to one's 
-own motion, is required. It's also important to keep in mind that people may 
-respond to robots differently than they respond to other people. Large 
-prediction errors of state-of-the-art approaches have suggested a large gap 
-between real-world deployment and 
-simulation~\cite{trautman2015robot,pfeiffer2016predicting}. When 
-relying on models for lookahead planning, if people act unpredictably (or in a 
-way not observed in the training data), safety can be compromised. 
+These models have been used for look ahead planning.
+However, none of this work considers how pedestrians would react to \emph{robots} as opposed to other people.  
+In particular, when these models have been used on real robots, there has been a large gap between 
+the predicted pedestrian motion and observed trajectories.~\cite{trautman2015robot,pfeiffer2016predicting}. 
+This gap prevents robots from planning effectively, and can lead to inefficient and/or unsafe robot behaviors.
 
 %%to eliminate the gap between human-robot interaction modeling and real-world deployment
-We therefore propose to train a predictive model from 
-data collected during real-world human-robot interaction, and 
-act online according to the learnt predictive model to obtain new training data. 
-This iterative process will help ensure consistency between the robot's 
-prediction of pedestrian's trajectories and their true trajectories in the 
-presence of the robot's actual actions.
+In this paper, we propose to train a predictive model of pedestrian
+motion near robots from data collected during real-world human-robot
+interaction.  We then observe that changing the robot behavior
+accordingly can lead to different pedestrian behavior.  We therefore
+propose an iterative learning process by which the robot acts
+according to its current learned predictive pedestrian motion model
+thus gathers revised data to incorporate within a new model.  This
+process is designed to help ensure consistency between the robot's
+prediction of pedestrians' trajectories and their true trajectories in
+the presence of the mobile robots.
 
 %With this process, we aim to achieve robot planning in 
 %crowds that not only follows the inherent interaction patterns in human 
@@ -146,13 +156,21 @@ presence of the robot's actual actions.
 %block the robot.
 
 %% to deal with human intentions for trajectory prediction
-To achieve smooth robot maneuvering in human crowds, it is essential to 
-systematically identify whether the person is focused on 
-reaching their goal (conducting natural navigating behaviors), or may be 
-distracted by the presence of robot (conducting unnatural navigating 
-behaviors, such as blocking). To model this problem, we propose to first 
-enable prediction of human traversal behaviors when encountering potential 
-collisions, shown in Fig.~\ref{fig1}. 
+%To achieve smooth robot maneuvering in human crowds, it is essential to 
+%systematically identify whether the person is focused on 
+%reaching their goal (conducting natural navigating behaviors), or may be 
+%distracted by the presence of robot (conducting unnatural navigating 
+%behaviors, such as blocking). To model this problem, we propose to first 
+%enable prediction of human traversal behaviors when encountering potential 
+%collisions, shown in Fig.~\ref{fig1}. 
+
+We consider the scenario, illustrated in Figure~\ref{fig1}, in which a
+person may have one of two possible intentions: slowing down to pass
+behind the robot or speeding up to pass in front of it.  To navigate
+safely towards its goal, the robot must predict the pedestrian's
+intention, and possibly plan to influence it.  In addition, the robot
+must consider the possibility that the person will intentially
+interact with the robot (e.g.\ to block its path and "play" with it).
 
 
 \begin{figure}[t]
@@ -196,11 +214,14 @@ collisions, shown in Fig.~\ref{fig1}.
 %traversal. Accordingly, the controller looks ahead and optimizes the joint 
 %efficiency subjected to the estimate of human traversal preferences.
 
-We model the pedestrians as solving a constrained path optimization 
-problem during traversal, which maintains the safe distances from the other agents while reaching 
-their destination as quickly as possible. This approach provides us the 
-capability to predict which path the 
-pedestrian is prone to take to avoid, at what speed pattern. The robot can 
+To this end, we model goal-oriented pedestrians as solving a constrained path optimization 
+problem, which maintains safe distances from other agents while trying to reach
+their destination as quickly as possible. 
+%This approach provides us the 
+%capability to predict which path the 
+%pedestrian is prone to take to avoid, at what speed pattern. 
+%**************FIX REST OF THIS PARAGRAPH
+The robot can 
 then optimize the joint efficiency by avoiding responsively to their 
 preferences, legibly, such that the pedestrian 
 is clear about the robot's intention. Our model then predicts cooperative behavior from rational pedestrians; non-cooperative behavior, such as intentional blocking, can therefore be distinguished if the pedestrian does not follow any expected patterns.
@@ -237,7 +258,7 @@ rational behaviors.
 % c) joint decision making process
 While the above approaches have shown to predict pedestrian motions 
 offline or in simulation, an issue arose with the Markov Decision 
-Process assumption when the methods were deployed on a robot to navigate in real world:
+Process assumption when the methods were deployed on a robot to navigate in the real world:
 the real-time dynamics of pedestrians are also dependent on the robot's 
 actions. 
 %While the pedestrians treat the robot as an agent, they plan 
