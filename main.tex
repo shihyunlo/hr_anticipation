@@ -110,8 +110,15 @@ towards different destinations.
 %In general, it is not enough for the robot to
 %reactively avoid imminent collisions. 
 To navigate robustly, it must both predict the motions of approaching pedestrians, and plan its own motions so as not to collide with their predicted paths.
-When doing so, it is not sufficient to consider the paths of pedestrians as fixed.  Rather, the robot sneeds to recognize that its own behaviors can impact those of the pedestrians.
-That is, the robot and pedestrians are all a part of a tightly coupled multiagent navigation problem.~\cite{trautman2010unfreezing}.  In this paper, we consider how to enable a robot to start by modeling a person's intended trajectory, and then take \emph{legible} navigation actions to optimize the expected joint efficiency of the robot's and the pedestrian's motions, after taking into account the pedestrian's reactions to the robot's motions.
+When doing so, it is not sufficient to consider the paths of pedestrians as 
+fixed.  Rather, the robot needs to recognize that its own behaviors can 
+impact those of the pedestrians. That is, the robot and pedestrians are all a 
+part of a tightly coupled multiagent navigation 
+problem~\cite{trautman2010unfreezing}.  In this paper, we consider how to 
+enable a robot to start by modeling a person's intended trajectory, and then 
+take \emph{legible} navigation actions to optimize the expected joint 
+efficiency of the robot's and the pedestrian's motions, after taking into 
+account the pedestrian's reactions to the robot's motions.
 
 %However, when predicting into
 %the future, collision avoidance algorithms often fail to find a path
@@ -132,7 +139,7 @@ past decade to simulate human pedestrian dynamics~\cite{lamarche2004crowd,
   %treuille2006continuum, %paris2007pedestrian, 
 karamouzas2009predictive}.
 %Accordingly, robot planning in crowds has shown efficient performance in simulation
-These models have been used for look ahead planning.
+%These models have been used for look ahead planning.
 However, none of this work considers how pedestrians would react to \emph{robots} as opposed to other people.  
 In particular, when these models have been used on real robots, there has been a large gap between 
 the predicted pedestrian motion and observed trajectories.~\cite{trautman2015robot,pfeiffer2016predicting}. 
