@@ -319,17 +319,22 @@ that generates plans to avoid dynamic obstacles based on personal walking featur
 \vspace{-0.1em}
 The following is a receding-horizon control formulation of the constrained 
 optimization problem characterizing the pedestrian's motion. The control $u$ takes 
-in $\mathbbm{R}^2$ and is defined as the acceleration of the pedestrian, with 
+in $\mathbbm{R}^2$ 
+\commentp{"takes in" is awkward.  Can we just say $u \in \mathbbm{R}^2$?}
+and is defined as the acceleration of the pedestrian, with 
 position $x^p \in \mathbbm{R}^2$ and velocity $v^p \in \mathbbm{R}^2$. We take 
-in discrete state space formulation, so $x_{t+1}^p = v_t^p + v_t^p dt$. Same 
-is for the ''opponent's'' position $x^o$ and velocity $v^o$. We assume that, 
+in
+\commentp{I don't know what "take in" means here either.  Do you mean "We assume a discrete state space"?}
+ discrete state space formulation, so $x_{t+1}^p = v_t^p + v_t^p dt$.
+\commentp{isn't that a continuous, not discrete forumulation?}
+Similarly, we denote the ''opponent's'' position $x^o$ and velocity $v^o$. We assume that, 
 people plan with a receding-horizon strategy, namely to plan ahead for a fixed 
-horizon from time $t$ to $t+N$, act according to $u_t$, and start over in the 
+horizon from time $t$ to $t+N$, act according to $u_t$, and start over on the 
 next time step $t+1$:
 
 constraints on 
 the temporal collisions with 
-(adaptive) safety margins $r^{saf}$. 
+(adaptive) safety margins $r^{saf}$. \commentp{Is that a sentence fragment left over from something?  There needs to be some lead in to the equations such as what I suggested below.}
 %More specifically, we model the pedestrian 
 %planning with a receding-horizon strategy, adopting a similar cost formulation with Model 
 %Predictive Control, over $N$ time steps.
@@ -365,7 +370,7 @@ penalized in $C_{jerk}$ on the jerkiness of the trajectory.
 $C_{length}$ and $C_{to-go}$ penalize path length and a heuristic cost-to-go. 
 Following a standard quadratic formulation in optimal control, we have: $C_{jerk,t}=u_t^TRu_t$, 
 $C_{length,t}=\delta_t^TQ\delta_t$, $\delta_t = x_{t+1}-x_t$, 
-$C_{N,to-go} = (x_N-x^G)^TP_N(x_N-x^G)$, whereas $x^G$ is the (sub)goal 
+$C_{N,to-go} = (x_N-x^G)^TP_N(x_N-x^G)$, where $x^G$ is the (sub)goal 
 position of the pedestrian. $P_N$ can be solved through dynamic programming:
 $P_N = Q + K_N^TRK_N + (A+BK_N)^TP_N(A+BK_N)$, 
 $K_N = -(R+B^TP_{N-1}B)^{-1}B^TP_{N-1}A$, considering a linear system dynamics
