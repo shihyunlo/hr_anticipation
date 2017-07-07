@@ -339,7 +339,7 @@ next time step $t+1$:
 %planning with a receding-horizon strategy, adopting a similar cost formulation with Model 
 %Predictive Control, over $N$ time steps.
 %\commentp{Write something like:  The following is an LP formulation of the contrained optimization problem modeling the pedestrian's motion.  (and you haven't defined x, u, or even the velocities as a funcntion of time - the t subscripts.  Can't $r^{rel}$ be defeined in terms of the x's?}
-%$r^{rel} = (x^p-x^o)^T(x^p-x^o))$,
+%$r^{rel} = (x^p-x^o)^T(x^p-x^o)$,
 %where $x^p, x^o$ are the positions of the two agents and the location where an expected collision will happen 
 \begin{equation}~\label{eq:receding_control}
   \begin{aligned}
@@ -366,7 +366,7 @@ $v^p_0, v^o_0$, which the robot can estimate based on past
 observations through filtering techniques. 
 
 The control input $u$ is not bounded but 
-penalized in $C_{energy}$ on acceleration/velocity variation of the trajectory. 
+penalized in $C_{energy}$ for acceleration/velocity variation of the trajectory. 
 $C_{length}$ and $C_{to-go}$ penalize path length and a heuristic cost-to-go. 
 Following a standard quadratic formulation in optimal control, we have: $C_{energy,t}=u_t^TRu_t$, 
 $C_{length,t}=\delta_t^TQ\delta_t$, $\delta_t = x_{t+1}-x_t$, 
@@ -377,7 +377,7 @@ $K_N = -(R+B^TP_{N-1}B)^{-1}B^TP_{N-1}A$, considering a linear system dynamics
 $s_{t+1}= As_t+Bu_t$, here $s = [x^p,$ $v^p]$. $Q$ and $R$ are positive 
 semi-definite matrices. Other forms of cost-to-go can also be adopted, such as 
 naive distance estimate (considering only distance-to-go), or social 
-cost-to-go estimate.
+cost-to-go estimate.\commentp{What's a social cost-to-go estimate?}
 %`(for example, to incorporate 
 %potential road-blocking by a group of static pedestrians nearby).  
 %$C_{social}$ may take in the form considered in social 
@@ -386,11 +386,11 @@ cost-to-go estimate.
 %friendliness in crowd navigation. 
 
 $C_{social}$ represents the pedestrian's social interaction tendencies when 
-navigating in a crowd. More specifically, with the aid 
-of the study on robot legible motion in 
+navigating in a crowd. More specifically, based on
+studies of robot legible motion in 
 navigation~\cite{kruse2012legible,lichtenthaler2012influence} and human 
 spacing/dynamics in crowds~\cite{helbing1995social,hall1966hidden}, we design 
-the social cost function $C_{social}$ to include \textit{visibility, comfort}, 
+the social cost function $C_{social}$ to include \textit{visibility}, and \textit{comfort}, 
 to explain human crossing path selection:
 \begin{equation}~\label{eq:social_cost}
   \begin{aligned}
@@ -400,16 +400,21 @@ to explain human crossing path selection:
 \end{equation}
 As suggested in ~\cite{kruse2012legible}, when planning for crossing, people 
 prefer the traversing path with high visibility, such as in the front.
+\commentp{Say visibility of what:  people prefer the traversing path that maintains visibility from the point of view of the other agent (i.e.\ passing in front).}
 From the social force formulation~\cite{helbing1995social}, confronting 
-velocity causes higher repellent forces (therefore higher cost function 
-gradient). Here we refer it as social discomfort, defined as having high 
-confronting velocity within the pedestrian's social space:
+velocity \commentp{What is confronting velocity?  Do you mean relative velocity?  Velocity with a large component along the line pointing directly at the other agent?}
+causes higher repellent forces (therefore higher cost function 
+gradient). 
+\commentp{repellant forces of whom from what?   What's the cost function gradient?  You're using terms without defining them here again....}
+Here we refer it\commentp{What is "it"?} as social discomfort, defined as having high 
+confronting velocity\commentp{Still don't know what that means.} within the pedestrian's social space:
 \begin{equation}
   C_{comf} = ((v^o)^T -v^p) \mathbbm{1}(r^{rel}<r^{soc}).
 \end{equation}
-This term penalizes maneuvers that turns towards the opponent agent for 
-crossing. Along with visibility assessment, pedestrians who choose to pass 
-behind are modeled to slow down and stay mostly on the original route, shown 
+This term penalizes maneuvers that turn towards the opponent agent for 
+crossing.\commentp{Can we just delete "for crossing" and still have this make sense?}
+Along with visibility assessment, pedestrians who choose to pass 
+behind are modeled to slow down\commentp{I don't know what "are modeled to slow down" means} and stay mostly on the original route, shown 
 in Fig.~\ref{fig:p1}.
 %Note that, here we hypothesize a (adaptive) response 
 %time $n$ before the person act according to the cost function, which we refer 
@@ -421,7 +426,7 @@ Note that we build into our model a (adaptive) response
 time $n$ before the person acts according to the cost function, following the notion of
 \emph{psychological tension} before reacting to mental 
 decisions~\cite{helbing1995social}.  This variable, reflected in 
-Fig.~\ref{eq:receding_control} allows us to capture the fact that the person may 
+Eq.~\ref{eq:receding_control} allows us to capture the fact that the person may 
 have decided to change paths before he/she actually takes the action.
 
 %%%%%%%%%%%% homotopy class explanation
@@ -481,17 +486,30 @@ $\omega$, and possibly the weighting on other cost terms. Those psychological
 and social preference factors of a person can also vary when the confronting 
 agent is different, for example, a robot rather than a human.
 
-As suggested in ~\cite{hansen2009adaptive},
-people have different degrees of interest to interact with a robot, which 
-largely affect their maneuvers during human-robot crossing. For 
-example, in human crowd dynamics simulation, the safety margin is considered 
-merely a function of crowd density and walk speed~\cite{helbing1995social}, 
-but vary a lot from person to person around a robot, as observed during robot 
-real-world deployment. 
+\commentp{Is this what you mean for the prior paragraph?}
+We find that different people plan different paths even when facing the same situation, which we can 
+model through the variables in Eq.~\ref{eq:receding_control} such as 
+$n$ (response time), $r^{saf}$ (safety margin), $\omega$ (navigation social preference weighting)\commentp{I don't understand what that means.  And you never actually defined $\omega$ above...}, and possibly the weighting on other cost terms\commentp{such as?}. Those psychological 
+and social preference factors of a person can also vary based on the confronting
+agent, for example, a robot rather than a human.
+\commentp{You need to decide on a word to describe the other agent and stick with it.  Opponent?  Confronting agent?  Other agent?  Earlier you were using "opponent", and that's what the notation suggests.  But maybe "other agent" or "crossing agent" is better.}
 
-To predict human-robot crossing behaviors, it then seems insufficient to adopt 
-one set of parameters learnt from the lump-sum interaction data in the 
-predictive model. Besides, crossing actions can be abrupt (considering 
+As suggested in ~\cite{hansen2009adaptive},
+people have different degrees of interest/comfort in interacting with a robot, which 
+can affect their maneuvers during human-robot crossing. For 
+example, in human crowd dynamics simulation, the safety margin is considered 
+merely a function of crowd density and walking speed~\cite{helbing1995social},
+whereas in real-world robot deployments, we observe that it can vary a lot from person to person.n
+%but vary a lot from person to person around a robot, as observed during robot 
+%real-world deployment. 
+\commentp{I edited that sentence.  Is it still correct?}
+
+To predict human-robot crossing behaviors, it is therefore insufficient to learn
+one set of parameters from one large set of interaction data across many people. 
+%the lump-sum interaction data in the predictive mode
+\commentp{I edited the above because I didn't understand "in the predictive mode"}
+\commentp{I'm not able to follow the point of the rest of this paragraph.}
+Besides, crossing actions can be abrupt (considering 
 sudden pedestrian dynamics changes at time $n$), and the two classes of 
 trajectories are associated with largely different dynamics. Therefore, false 
 prediction can much deteriorate the joint path efficiency, and possibly the 
