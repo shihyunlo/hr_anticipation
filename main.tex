@@ -109,7 +109,7 @@ towards different destinations.
 %generally have limited sensing of nearby agents.  
 %In general, it is not enough for the robot to
 %reactively avoid imminent collisions. 
-To navigate robustly, it must both predict the motions of approaching pedestrians, and plan its own motions so as not to collide with their predicted paths.
+To navigate robustly, the robot must both predict the motions of approaching pedestrians, and plan its own motions so as not to collide with their predicted paths.
 When doing so, it is not sufficient to consider the paths of pedestrians as 
 fixed.  Rather, the robot needs to recognize that its own behaviors can 
 impact those of the pedestrians. That is, the robot and pedestrians are all a 
@@ -135,31 +135,34 @@ problem.
 Many approaches have been proposed in the 
 past decade to simulate human pedestrian dynamics in crowds~\cite{helbing1995,lamarche2004crowd, 
   %treuille2006continuum, %paris2007pedestrian, 
-karamouzas2009predictive}, and provided insights in human collision avoidance behaviors.
+karamouzas2009predictive}, and have provided insights into human collision avoidance behaviors.
 %Accordingly, robot planning in crowds has shown efficient performance in simulation
 %These models have been used for look ahead planning.
-However, to consider a \emph{robot} planning in crowds, behaviors observed 
-among human pedestrians may not fully cover their dynamics with the robot. 
-In particular, while deploying a robot in the real world, there has been a 
-large gap between the predicted pedestrian motion and observed trajectories in 
-state-of-the-art approaches~\cite{trautman2015robot,pfeiffer2016predicting}. 
-None of the work in the literature has addressed human-robot dynamics in 
-robot planning, which can lead to inefficient and/or unsafe robot behaviors.
+However, 
+%to consider a \emph{robot} planning in crowds, 
+behaviors observed among human pedestrians may not fully 
+repreent their dynamics when interacting with a \emph{robot}. 
+In particular, when deploying a robot in the real world using state-of-the art approaches, there has been a 
+large gap between the predicted pedestrian motion and observed trajectories~\cite{trautman2015robot,pfeiffer2016predicting}. 
+None of the robot planning work in the literature has been based on realistic human-robot dynamics,
+ which has lead to inefficient and/or unsafe robot behaviors.
 
 %%to eliminate the gap between human-robot interaction modeling and real-world deployment
-In this paper, we propose to solve the robot navigation 
-in crowd problem by taking into account the pedestrian's reactions to the 
+In this paper, we propose to solve the \emph{robot navigation 
+in crowds} problem by taking into account the pedestrian's reactions to the 
 \emph{robot's} motions, to ultimately optimize the expected joint efficiency 
 of the robot's and the pedestrian's motions. We start with the study of human 
 collision avoidance behaviors subject to robot's maneuvers, and pay close 
-attention to scenarios with path crossing, as illustrated in Fig.~\ref{fig1}.
+attention to scenarios with crossing paths, as illustrated in Fig.~\ref{fig1}.
 
-In such situations with potential future workspace occlusion, pedestrian path 
-decisions fall into two homotopy classes: either to pass from the front of the 
-confronting agent, or from behind. Such behaviors capture the dynamics of 
+In such situations with potential future workspace occlusion,
+\commentp{I don't know what future workspace occlusion means}
+pedestrian paths fall into two homotopy classes: either passing in front of the 
+robot (or other pedestrian), or behind it. Such behaviors capture the dynamics of 
 goal-focused people in a workspace occlusion scenario, which can therefore 
 be used to distinguish motions with different social interaction preferences, such as 
 intentional blocking.
+\commentp{That last sentence is too complex.  What are "social interaction preferences"?  Is intentional blocking a preference or a behavior?}
 
 
 %The robot can 
