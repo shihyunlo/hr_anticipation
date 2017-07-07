@@ -318,23 +318,23 @@ that generates plans to avoid dynamic obstacles based on personal walking featur
 \section{Methodology}
 \vspace{-0.1em}
 The following is a receding-horizon control formulation of the constrained 
-optimization problem characterizing the pedestrian's motion. The control $u$ takes 
-in $\mathbbm{R}^2$ 
-\commentp{"takes in" is awkward.  Can we just say $u \in \mathbbm{R}^2$?}
-and is defined as the acceleration of the pedestrian, with 
-position $x^p \in \mathbbm{R}^2$ and velocity $v^p \in \mathbbm{R}^2$. We take 
-in
-\commentp{I don't know what "take in" means here either.  Do you mean "We assume a discrete state space"?}
- discrete state space formulation, so $x_{t+1}^p = v_t^p + v_t^p dt$.
-\commentp{isn't that a continuous, not discrete forumulation?}
+optimization problem characterizing the pedestrian's motion. The control 
+$u \in \mathbbm{R}^2$ 
+%\commentp{"takes in" is awkward.  Can we just say $u \in \mathbbm{R}^2$?}
+is defined as the acceleration of the pedestrian, with 
+position $x^p \in \mathbbm{R}^2$ and velocity $v^p \in \mathbbm{R}^2$. We  
+consider
+%\commentp{I don't know what "take in" means here either.  Do you mean "We assume a discrete state space"?}
+discrete system dynamics in continuous state space, so $x_{t+1}^p = v_t^p + v_t^p dt$.
+%\commentp{isn't that a continuous, not discrete forumulation?}
 Similarly, we denote the ''opponent's'' position $x^o$ and velocity $v^o$. We assume that, 
 people plan with a receding-horizon strategy, namely to plan ahead for a fixed 
 horizon from time $t$ to $t+N$, act according to $u_t$, and start over on the 
 next time step $t+1$:
 
-constraints on 
-the temporal collisions with 
-(adaptive) safety margins $r^{saf}$. \commentp{Is that a sentence fragment left over from something?  There needs to be some lead in to the equations such as what I suggested below.}
+%constraints on 
+%the temporal collisions with 
+%(adaptive) safety margins $r^{saf}$. \commentp{Is that a sentence fragment left over from something?  There needs to be some lead in to the equations such as what I suggested below.}
 %More specifically, we model the pedestrian 
 %planning with a receding-horizon strategy, adopting a similar cost formulation with Model 
 %Predictive Control, over $N$ time steps.
