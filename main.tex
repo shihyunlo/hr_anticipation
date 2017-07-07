@@ -174,20 +174,20 @@ intentional blocking.
 
 %Towards the deployment of a service robot in real world, the robust guarantee of safety during human robot interaction is important. Still, state-of-the-art modeling of this joint dynamics has limited capability when pedestrians engage in behaviors not presented in the training data. With complex model and unbalanced training data, the prediction model is under high risk of overfitting.
 
-During real-world deployment to collect human-robot interaction data, we 
-observed that different people have much different strategies over path 
-decisions. We therefore propose a psychological model of such decision making 
-process, to reason about factors that potentially influence those different avoidance 
+From gathering real-world human-robot interaction data, we 
+observed that different people have very different strategies over path 
+decisions. We therefore propose a psychological model of their decision making 
+process to capture factors that potentially influence those different avoidance 
 strategies. Such a model helps us identify a particular person's strategy as it 
 approaches the robot, to further select features to train a predictive model 
 over path decisions.
  
 
 We also observed that changing the robot behavior
-accordingly can lead to different pedestrian behavior.  We therefore
+can lead to different pedestrian behavior.  We therefore
 propose an iterative learning process by which the robot acts
 according to its current learned predictive pedestrian motion model
-thus gathers revised data to incorporate within a new model.  This
+to gather revised data to incorporate within a new model.  This
 process is designed to help ensure consistency between the robot's
 prediction of pedestrians' trajectories and their true trajectories in
 the presence of the mobile robots.
@@ -294,7 +294,7 @@ model pedestrian dynamics by learning their policies assuming global observation
 rational behaviors.
 % a,b ignore the interactive dynamics in which one player's action affects the other's 
 % c) joint decision making process
-While the above approaches have shown to predict pedestrian motions 
+While the above approaches have been shown to predict pedestrian motions 
 offline or in simulation, an issue arose with the Markov Decision 
 Process assumption when the methods were deployed on a robot to navigate in the real world:
 the real-time dynamics of pedestrians are also dependent on the robot's 
@@ -306,7 +306,7 @@ In this regard, a multi-player game setting including both human and robot actio
 % d) prediction using offline training data does not always work: data may be from rational agents. Further, interactive data may only go from a small portion of state space, excited by pre-defined robot behavior 
 Still, all of the above work are built from data collected by observing human-human 
 interaction, which has degraded planning performance while encountering unmodeled 
-human-robot interaction during real-world 
+human-robot interactions during real-world 
 deployment~\cite{trautman2015robot, pfeiffer2016predicting}. To achieve 
 cooperative interaction with humans and robots sharing a workspace, it is 
 an essential capability for the robot to identify people's 
@@ -322,10 +322,11 @@ problem, and formulate the constraints on the temporal collisions with
 (adaptive) safety margins $r^{saf}$. More specifically, we model pedestrian 
 planning with a receding-horizon strategy, adopting a similar cost formulation with Model 
 Predictive Control, over $N$ time steps. We assume that 
-pedestrians have some vague estimate of the velocity of 
-own velocity $v^p$, of the opponent agent $v^o$, and relative distance 
-$r^{rel}$ between 
-two agents to estimate where a collision might happen:
+pedestrians have some vague estimate of 
+their own velocity $v^p$, of the "opponent's" velocity $v^o$, and of the relative distance 
+$r^{rel}$ between the
+two agents, to estimate where a collision might happen:
+\commentp{Write something like:  The following is an LP formulation of the contrained optimization problem modeling the pedestrian's motion.  (and you haven't defined x, u, or even the velocities as a funcntion of time - the t subscripts.  Can't $r^{rel}$ be defeined in terms of the x's?}
 %$r^{rel} = (x^p-x^o)^T(x^p-x^o))$, where $x^p, x^o$ are the positions of the two agents
 %and the location where an expected collision will happen 
 \begin{equation}~\label{eq:receding_control}
@@ -341,36 +342,59 @@ two agents to estimate where a collision might happen:
  \end{aligned}
 \end{equation}
 Here, the inequality constraints are posed on the safety distance between two 
-agents and the velocity upper-bound $v_{max}$. The equality constraints are posed on the 
+agents and the velocity upper-bound $v_{max}$. 
+\commentp{max v should be different for robots and people, right?  Specify who's max v that is.}
+The equality constraints are posed on the 
 dynamics of both agents and initial(desired) velocities 
 $v^p_0, v^o_0$. The control input $u$ is not bounded but 
 penalized in $C_{jerk}$ on the jerkiness of the trajectory. 
 $C_{length}$ and $C_{to-go}$ penalize path length and a heuristic cost-to-go. 
-$C_{socical}$ may take in the form considered in social 
+\commentp{These are still not precisely defined.}
+$C_{social}$ may take in the form considered in social 
 proximity model~\cite{kruse2012legible}, social force 
-model~\cite{helbing1995social}$\cdots$ etc, to maintain the social 
-friendliness in crowd navigation. Note that, here we hypothesize a (adaptive) response 
+model~\cite{helbing1995social}$\ldots$ etc, to maintain the social 
+friendliness in crowd navigation. 
+\commentp{Do you mean?  $C_{social} represents the pedestrian's social interaction tendencies when navigating in a crowd, which can differ from person to person.  There are several different forms it can take, such as a social proximity model~\cite{kruse2012legible} or a social force model~\cite{helbing1995social}.}
+Note that, here we hypothesize a (adaptive) response 
 time $n$ before the person act according to the cost function, which we refer 
 to the psychological tension before reacting to mental 
 decisions~\cite{helbing1995}. With that said, the person may have decided to 
 change path to avoid, but it takes a while for he/she to really take the action.
+\commentp{Do you mean?
+Note that we build into our model a (adaptive) response 
+time $n$ before the person acts according to the cost function, following the notion of
+\emph{psychological tension} before reacting to mental 
+decisions~\cite{helbing1995}.  This variable, reflected in ...[say where in the equations] allows us to capture the fact that the person may have decided to 
+change paths before he/she actually takes the action.
+}
 
-The temporal constraint divides the 2D planning configuration space into two 
-homotopy classes, which leads to two commonly observed crossing path decisions, 
-considering a two-player scenario: to slow down and traverse from behind by 
-freeing the expected occupation at intersection (passive action, $a^{p}$, as 
-shown in Fig.~\ref{fig:p1}), as well as to speed up and pass in front by postponing 
+The temporal constraint
+\commentp{What temporal constraint?}
+divides the 2D planning configuration space into two 
+homotopy classes,
+\commentp{is there a way to get the homotopy classes from the equations?  How?  By processing/solving them in some way?}
+which leads to two commonly observed crossing path decisions 
+in a two-player scenario: slowing down and traversing from behind by 
+removing the expected occupation
+\commentp{say who is expecting and who is occupying}
+ at the projected intersection
+\commentp{you haven't yet refered to/defined what is the projected intersection.  Is it in the equations?}
+(passive action, $a^{p}$, as 
+shown in Fig.~\ref{fig:p1}), as well as to speeding up and passing in front by postponing 
 the expected intersection (active action, $a^a$ as shown in Fig.~\ref{fig:p2}).
 
 Note that, from the path planning perspective, there exists another homotopy 
-class symmetric to that of passing from in front, as to turn towards the 
-opponent agent then speed up.
+class symmetric to that of passing in front:  turning towards the 
+opponent agent then speeding up. \commentp{to pass behind it quickly}
 %by turning some degrees towards the other agent, 
-This maneuver results in earlier crossing time than the other two options, and 
+This maneuver results in earlier crossing time\commentp{crossing time also wasn't defined.  Is it reflected in thequations?}
+than the other two options, and\commentp{but?} 
 is seldom seen in crowds because of the inconsistency between intention 
 (passive traversal from behind) and motion pattern (active traversal by 
 speeding up). The path length is long and the confronting action raises the 
 risk of breaking in front of the other agent's safety margin. 
+\commentp{I don't understand "breaking in front of the other agent's safety margin".  Breaking down?  Why in front?  Isn't the path behind?}
+\commentp{Do you mean to say that we don't consider this homotopy class?  You don't say that so far...}
 %% state space representation, 
 % from robot's perspective, with a figure showing desired vel, goal..etc
 \vspace{-.2em}
