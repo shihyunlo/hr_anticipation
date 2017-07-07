@@ -331,7 +331,7 @@ two agents to estimate where a collision might happen:
 \begin{equation}~\label{eq:receding_control}
   \begin{aligned}
     &min_{u_n \dots u_N} \Sigma^N_{t=n} \small{C_{length,t} + C_{jerk,t} + C_{social,t}} + C_{to-go,N}\\
-    & (r^{rel}_t)^2 > (r^{{saf}^2})\\
+    & (r^{rel}_t)^2 > (r^{{saf})^2}\\
     & v^p_t < v_{max}\\
     & x^p_{t+1} = x^p_t + v^p_t \scriptsize{d}t\\
     & x^o_{t+1} = x^o_t + v^o_t \scriptsize{d}t\\
@@ -374,8 +374,10 @@ risk of breaking in front of the other agent's safety margin.
 %% state space representation, 
 % from robot's perspective, with a figure showing desired vel, goal..etc
 \vspace{-.2em}
-\subsection{Human Traversal Decision Hypothesis} 
-From an optimal path planning perspective, we can assign costs to 
+\subsection{Human Crossing Decision Hypothesis} 
+To model human path planning behaviors, we either assumes a behavior model 
+
+we can assign costs to 
 the observed path, and there are different approaches to explain or predict 
 the likelihood of such path based on assumptions on the decision making 
 process~\cite{ratliff2006maximum, ziebart2008maximum}, or cost function 
@@ -443,7 +445,7 @@ limited data from real-world experience, is to enforce sparsity if $\omega$ is
 presented as a functional mapping. This approach can be understood as to limit 
 the variety of traversal preferences.
 \vspace{-.3em}
-\subsection{Intention Expression and Opponent Response Hypothesis during Human Traversal}
+\subsection{Intention Expression and Opponent Response Hypothesis during Human Crossing}
 When observing human navigation in crowds, it is commonly seen that the 
 \textit{dynamic patterns} of motion, such as speed variations, are coupled 
 with \textit{intention}. This somehow differs from the 
