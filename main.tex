@@ -374,7 +374,7 @@ $C_{N,to-go} = (x_N-x^G)^TP_N(x_N-x^G)$, where $x^G$ is the (sub)goal
 position of the pedestrian. $P_N$ can be solved through dynamic programming:
 $P_N = Q + K_N^TRK_N + (A+BK_N)^TP_N(A+BK_N)$, 
 $K_N = -(R+B^TP_{N-1}B)^{-1}B^TP_{N-1}A$, considering a linear system dynamics
-$s_{t+1}= As_t+Bu_t$, here $s = [x^p,$ $v^p]$. $Q$ and $R$ are positive 
+$s^p_{t+1}= As^p_t+Bu_t$, here $s^p = [x^p,$ $v^p]$. $Q$ and $R$ are positive 
 semi-definite matrices. Other forms of cost-to-go can also be adopted, such as 
 naive distance estimate (considering only distance-to-go), or social 
 cost-to-go estimate.\commentp{What's a social cost-to-go estimate?}
@@ -544,30 +544,110 @@ safety criteria.
 %presented as a functional mapping. This approach can be understood as to limit 
 %the variety of traversal preferences.
 
--------------
-We therefore look into the 
+However, to identify all those variables seems computationally intractable 
+from a model training perspective. For example, for inverse optimal planning, 
+the algorithm seeks to find a fixed $\omega$ in 
+Eq.~\ref{eq:social_cost} that maximizes the likelihood function $P$ of 
+observed trajectories $\xi$,
+\begin{equation}
+  max_{\omega} P(\xi|\omega),
+\end{equation}
+and trajectories representing different values of $\omega$ need to first be 
+classified, or the algorithm will not converge. 
+
+Still, to plan in the crowd, humans do a successful job without accurate 
+prediction, and false prediction is even commonly observed without necessary 
+safety harm. For example, with a direct confronting agent in the front walking 
+towards you, people sometimes avoid to the same side at the same time (or 
+within close time). What seems to matter is then just \textit{which way} 
+to go instead of the entire trajectory prediction. 
+
+We therefore propose to seek for a much simpler predictor over pedestrian path 
+crossing decision manifold: to pass from the front ($a^P$) or behind($a^A$), 
+through logistic regression,
+\begin{equation}
+p(a=a^P|\xi^p_t, s_t) \sim \frac{1}{1+e^{w^Tf(\xi^p_t, s_t)}}.
+\end{equation}
+Here, $s_t = [x^p_t$, $v^p_t$, $x^o_t$, $v^o_t]$ is the state of the overall 
+system, included to characterize the crossing scenario;  $\xi^p_t$ is the past 
+trajectory of the pedestrian at time $t$, included to characterize the 
+pedestrian's the dynamic patterns, and $f$ is a feature function.
+
+%%%%crossing function
+
+We propose to iteratively learn this predictive model through robot's real-world 
+deployment. Since people are also adaptive about their reaction to a robot, 
+new types of behaviors may be observed over time.
+
 \vspace{-.3em}
 \subsection{Intention Expression and Opponent Response Hypothesis during Human Crossing}
-When observing human navigation in crowds, it is commonly seen that the 
-\textit{dynamic patterns} of motion, such as speed variations, are coupled 
-with \textit{intention}. This somehow differs from the 
-definition of legibility as being goal-expressive in 
-~\cite{dragan2013legibility}, and falls back to the early description of 
-legibility as to be intention 
-expressive and predictable: we slow down to wait for the other crossing agent 
-(passive traversal $a^p$), which often leads to short paths that do not much 
-deviate from the original undisturbed paths (also suggested in 
-~\cite{kruse2012legible}). Or we speed up to show the 
-aggressive intention to temporally occupy the crossing agent's workspace (active 
-traversal $a^a$). 
+%% intention indiated behind speed patterns. 
+When people decide their path for crossing, the \textit{dynamic patterns} of 
+motion, such as speeding up and turning away, indicates the intended path 
+decision, which we refer in this paper as the \textit{intention}: the 
+intention to actively cross the other agent from the front by speeding up($a^A$), 
+or to passively cross from behind by slowing down($a^P$).
 
-While intention affects the speed pattern of the path taken, it also has 
-correlation with interaction preferences, which correspond to different $\omega$ 
-values. For example, aggressive people, defined as people who prefer to actively traverse 
-other agents, tend to react early once they observe potential collisions and 
-to keep a large safety margin from the others. The choice of optimal path 
-differs with different intentions; same is true for the homotopy class the 
-path belongs to.
+
+%This somehow differs from the 
+%definition of legibility as being goal-expressive in 
+%~\cite{dragan2013legibility}, and falls back to the early description of 
+%legibility as to be intention 
+%expressive and predictable: we slow down to wait for the other crossing agent 
+%(passive traversal $a^P$), which often leads to short paths that do not much 
+%deviate from the original undisturbed paths (also suggested in 
+%~\cite{kruse2012legible}). Or we speed up to show the 
+%aggressive intention to temporally occupy the crossing agent's workspace (active 
+%traversal $a^A$). 
+
+%% in HRI, legible motion is important; 
+Predictability and intention expressiveness of robot motion have been considered 
+as important criteria to design social-friendly or cooperative robots in 
+the human-robot interaction literature. In our human-robot crossing scenario, 
+it is then especially important for the person to be able to \textit{predict} 
+the robot's motion, so as to feel \textit{safe} around a robot in a 
+collision-dangerous situation. We then propose to achieve predictable and 
+intention-expressive motion by mimicking the dynamic patterns of the 
+traversal path decision, to communicate the intention of crossing in a 
+human-familiar manner.
+
+
+%fom modeling learning, also important to model the strategy over robot predictable motions, to 
+%reduce the noisy motion due to uncertainty of robot future trajectoryi
+%% \commentl{Intention communication in game theory??}
+Intention communication is commonly observed in crowd navigation, to reach 
+consensus on the ways the two agents are going to void. 
+--------------
+
+Based on safety concerns and travel efficiency expectation, before the person 
+react to this potential collision, the robot can 
+decide to communicate intention $a^r= (a^P$ or $a^A$) through legible motion 
+realization ($\xi^A$ or $\xi^A$),
+\begin{equation}~\label{eq:transition}
+p(a^p=a^P|\xi_t, a^r) \sim \frac{1}{1+e^{w^Tf(\xi_t,a^r)}},
+\end{equation}
+and use this intention transition predictor for look-ahead planning.
+
+This process can only be iteratively learnt through robot real-world 
+deployment, considering people are also learning the maneuver of the robot.
+
+%% \omega: different preference of intention results in omega. why, exactly? 
+%%we assume: different people have different preferences in crossing, and have different
+%%response to a robot's indicated motion. Why would this happen?
+
+%While intention affects the speed pattern of the path taken, it also has 
+%correlation with interaction preferences, which correspond to different $\omega$ 
+%values. For example, aggressive people, defined as people who prefer to actively traverse 
+%other agents, tend to react early once they observe potential collisions and 
+%to keep a large safety margin from the others. The choice of optimal path 
+%differs with different intentions; same is true for the homotopy class the 
+%path belongs to.
+
+%% is it opponent hypothesis? when we encounter different people, wondering 
+%%around, fast and direct, our crossing decision might be different. Is it 
+%%because of our assumption/interpretation about their intention. 
+%%the interpretation of a robot, and a robot's 
+%%intended action?
 
 People usually pose the hypothesis that, during navigation in crowds, other 
 people are able to \textit{understand intention expressive motions} and \textit{respond safely 
@@ -624,6 +704,10 @@ blocking/following the robot?
 In each case, we incorporate the opponent agent's influence into the decision 
 making process. With that said, his action is taken into account while people 
 consider their own actions. 
+%%we hypothesis: people perceive the robot goal oriented, but the goal 
+priority might be less important. They may perceive the robot as safe or 
+unsafe, which largely affect their safety margin, response time, dynamic patterns.
+
 \vspace{-.3em}
 \subsection{Preliminary Results}
 %heading variation suggests interactability
@@ -698,34 +782,34 @@ motions.
 %\label{fig:pre_result}
 %\end{figure*}
 \vspace{-.3em}
-\subsection{Mathematical Models}
-In situations where past observations are non-expressive to 
-distinguish human traversal types, safe and 
-intention-expressive maneuvers can evoke intention communication. Still, 
-without good estimate and prediction of human intentions, it is hard to 
-monitor intention communication quality. For this purpose, we propose to learn 
-two models to predict human intentions based on the above four pedestrian 
-types: before and after they interact with the robot.
+%\subsection{Mathematical Models}
+%In situations where past observations are non-expressive to 
+%distinguish human traversal types, safe and 
+%intention-expressive maneuvers can evoke intention communication. Still, 
+%without good estimate and prediction of human intentions, it is hard to 
+%monitor intention communication quality. For this purpose, we propose to learn 
+%two models to predict human intentions based on the above four pedestrian 
+%types: before and after they interact with the robot.
 
-Before interaction, to understand the person's intention for the robot to 
-respond safely and efficiently, we model the pedestrian's action $a^h$ over 
-passive ($a^p$) or active action ($a^a$) by logistic regression,
-\begin{equation}
-p(a^h=a^p|\xi_t) \sim \frac{1}{1+e^{w^Tf(\xi_t)}},
-\end{equation}
-here, $f$ is a feature vector discriminating pedestrian types from past trajectories.
+%Before interaction, to understand the person's intention for the robot to 
+%respond safely and efficiently, we model the pedestrian's action $a^h$ over 
+%passive ($a^P$) or active action ($a^A$) by logistic regression,
+%\begin{equation}
+%p(a=a^P|\xi_t) \sim \frac{1}{1+e^{w^Tf(\xi_t)}},
+%\end{equation}
+%here, $f$ is a feature vector discriminating pedestrian types from past trajectories.
 
-Based on safety concerns and travel efficiency expectation, before the person 
-react to this potential collision, the robot can 
-decide to communicate intention $a^r (a^p$ or $a^a$) through legible motion 
-realization ($\xi^p$ or $\xi^a$),
-\begin{equation}~\label{eq:transition}
-p(a=a^p|\xi_t, a^r) \sim \frac{1}{1+e^{w^Tf(\xi_t,a^r)}},
-\end{equation}
-and use this intention transition predictor for look-ahead planning.
+%Based on safety concerns and travel efficiency expectation, before the person 
+%react to this potential collision, the robot can 
+%decide to communicate intention $a^r= (a^P$ or $a^A$) through legible motion 
+%realization ($\xi^A$ or $\xi^A$),
+%\begin{equation}~\label{eq:transition}
+%p(a^p=a^P|\xi_t, a^r) \sim \frac{1}{1+e^{w^Tf(\xi_t,a^r)}},
+%\end{equation}
+%and use this intention transition predictor for look-ahead planning.
 
-This process can only be iteratively learnt through robot real-world 
-deployment, considering people are also learning the maneuver of the robot.
+%This process can only be iteratively learnt through robot real-world 
+%deployment, considering people are also learning the maneuver of the robot.
 
 %dynaimc transition (how they would react to robot legible motions)
 %% definition of dynamics transition(our model applies to goal-oriented pople) 
