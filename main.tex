@@ -62,20 +62,20 @@ deployments of robots that can safely navigate through dense
 crowds~\cite{trautman2015robot, pfeiffer2016predicting}. Still, most
 robots lack the ability to navigate in a human-friendly manner, which
 requires the ability to identify human intentions, especially 
-in collision-risky situations, and to avoid
+in collision-risky situations, and to avoid collisions 
 “legibly~\cite{dragan2013legibility}.
 Most studies to date do not
 take human-robot interaction into consideration, resulting in
-unexpected human behaviors during deployment, and robot ineffective planning 
-subject to large prediction errors in human responses. In this work, we 
-therefore seek to model human reaction around a robot in collision-dangerous 
-scenarios, with specific study on situations where path crossing happens among 
-two agents. We associate different collision avoidance behaviors with people's 
-underlying intentions, and propose to predict human motions based on such 
-intentions. Preliminary results suggest large variations in different people's 
-decisions on crossing path selection. We then also seek for a psychological model 
-to explain the diverse responses, and propose to categorize people's 
-strategies based on their assumptions on the robot. 
+unexpected human behaviors during deployment, and ineffective robot planning 
+due to large prediction errors regarding human responses. In this work, we 
+therefore seek to model human reactions around a robot in collision-dangerous 
+scenarios, with specific study of situations in which two agents cross paths. 
+We model people's collision avoidance behaviors as a function of their 
+underlying intentions and social preferences, and propose to predict human motions based on such 
+intentions and preferences. Preliminary results suggest large variations in different people's 
+crossing path selection. We turn to a psychological model 
+to explain such diverse responses, and propose to categorize people's 
+strategies based on their assumptions about the robot. 
 
 %In particular, real-world deployment requires
 %distinguishing humans who are trying to pass the robot from those who
@@ -549,7 +549,7 @@ pedestrian dynamics change at time $n$ in Eq.~\ref{eq:receding_control}
 trajectories associated with the different crossing decisions, such as to pass 
 from behind or in front,
 %\commentp{whose?} 
-may have largely different dynamical performance, i.e. maximum speed and 
+may have very different dynamical performance, i.e. maximum speed and 
 acceleration patterns.
 %\commentp{what is dynamical performance?} 
 Therefore, inaccurate
@@ -590,7 +590,7 @@ safety criteria.
 However, to identify appropriate values for all the variables that affect the 
 pedestrian's motion (i.e. values that describe their observed motion so far)
 %\commentp{say what variables:  to identify appropriate values for all the variables that affect the pedestrian's motion (i.e.\ values that describe their observed motion so far)} 
-seems computationally intractable 
+is computationally intractable 
 from a model training perspective. For example, for inverse optimal planning, 
 the algorithm seeks to find a fixed $\omega$ in 
 Eq.~\ref{eq:social_cost} that maximizes the likelihood function $P$ of 
@@ -634,21 +634,21 @@ pedestrian's dynamics;
 $f$ is a feature function, and $w$ is a weighting to be learnt.
 
 To identify the crossing situation, $f$ is chosen to 
-present features such as current heading deviation from the desired heading of 
-both agents, their average velocity, relative distance, and the angle between 
+present features such as deviations from the desired heading of 
+both agents, their average velocities, relative distance, and the angle between 
 robot position and pedestrian goal, from the point of view of the pedestrian.
 
 The features we choose to describe the pedestrian's dynamics include: his/her 
 average velocity, velocity variance, and heading variance.
 
-Observations on past interaction is informative about the person's preference 
-of path crossing decision as well. For example, we can count the number of 
-passive crossing $\alpha$ and active crossing $\beta$, and pose a Beta 
-function as the prior over the passive crossing decision $a^P$ as: 
-$Beta(\alpha+1, \beta+1)$. However, diagnosis on past interaction is not 
-necessary to be easy to acquire with limited sensing. 
+Observations of past interactions are also informative of the person's
+path crossing preferences. For example, we can count the number of
+passive crossing $\alpha$ and active crossing $\beta$, and pose a Beta
+function as the prior over the passive crossing decision $a^P$ as:
+$Beta(\alpha+1, \beta+1)$.\commentp{it's awkward to use Beta as the function and the variable...} However, diagnosis of past interactions is
+not necessarily easy to come by with limited sensing.
 
-We propose to iteratively learnt the parameter $w$ in this predictive model
+We propose to iteratively learn the parameter $w$ in this predictive model
 %\commentp{what does it mean to learn the model?  What parameters nened to be set, and how do you characterize success?} 
 by collecting data from real-world human-robot interactions. Since people are also adaptive about their reaction to a robot, 
 new types of behaviors may be observed as the robot changes its behavior.
@@ -703,7 +703,7 @@ Intention communication is commonly observed in crowd navigation, to allow two
 self-interested agents to reach 
 consensus on the ways they are going to avoid one another, based on their 
 indicated future trajectories. To enable the robot
-such communication with human and to predict the resultant behavior change of 
+to communicate with a human pedestrian and to predict the resultant behavior change of 
 the confronting pedestrian, we propose a predictive model 
 %\commentp{specify what is who is predicting what} 
 following the formulation in 
@@ -718,7 +718,7 @@ caused by his/her uncertainty of the robot's future behavior.
 
 Such a model enables the robot to predict the pedestrian's motion,
 %\commentp{the robot to predict the pedestrian's motion, taking into account} 
-taking into account the 
+based on the 
 robot's crossing action, and facilitates realistic look-ahead planning by the robot.
 %\commentp{by the robot}.
 Similarly to training the free variables in Eq.~\ref{eq:logi}, we propose to iteratively learn 
@@ -765,14 +765,13 @@ new types of behaviors may be observed over time, as the robot changes its behav
 %navigation in crowds, other agents are able to understand intention expressive 
 %motions and respond safely and friendly. However, during human-robot 
 %interaction, this hypothesis may not necessarily hold
-During real-world robot deployments,
+When running the experiments described below in Section~\ref{sec:pre}, 
 %\commentp{It's strange to say that without having first described the experiments.}
- it was common feedback that 
-people described themselves as ``aware'' of the robot, which we interpreted as 
+people commonly described themselves as ``aware'' of the robot, which we interpreted as 
 ``requiring attention''. Those people also suggested that they were not navigating as 
 comfortably as they did in human crowds. However, some other people had the 
 opposite opinion, suggesting that the same robot is comfortable to navigate 
-around with.
+around.
 %\commentp{I don't understand this last sentence}
 
 %% \omega: different preference of intention results in omega. why, exactly? 
@@ -801,7 +800,8 @@ usually fixed during the entire navigation process. Immediate
 instances such as unexpected turns of nearby agents cause direct
 threat and therefore stimulate reaction quickly.
 
-Our subject, the human crossing behavior in crowds, is considered as potential 
+\commentp{I still have no idea what the point of this paragraph is.}
+Our subject, human crossing behavior in crowds, is considered as potential 
 threat with some response time of reaction, which may be influenced by the 
 opponent's behavior.
 %(which we modeled in Eq.~\ref{eq:receding_control} as variable $n$)
@@ -819,8 +819,8 @@ person can maximize his/her own utility.
 %still be slow and easy for the person to cross from in front.
 
 As for our human crossing scenario with a robot, we 
-model people to have different assumptions regarding the following items, as 
-to describe the observed behavior suggested in Section~\ref{sec:pre}:
+model people as having different assumptions regarding the following items, and use the model 
+to describe the behavior observed in our experiments described in Section~\ref{sec:pre}:
 \begin{enumerate}
   \item the perception of robot identity: is the robot non-self-interested or self-interested?
   \item the capability to maintain safety: is the robot safe to be around? Can 
@@ -863,15 +863,15 @@ routes. We first show the participants how the robot runs the task, and then
 ask them to travel between four sets of waypoints such that collisions with the 
 robot are possible. Each participant does the experiment twice, with different values of 
 safety margin ($0.3m$ and $1m$) that the robot keeps from the pedestrian. 
-After the tests, people are asked about how they feel about navigating around 
-the robot. Six people were invited in the test, with no prior experience to 
-interact with the tested platform. We adopt a ROS people-tracking package from ~\cite{leigh2015person} to record pedestrian trajectories with an onboard 
+After the tests, we asked people how they felt about navigating around 
+the robot. Six people participated in the test, none of whom had any prior experience 
+with the robot. We adopt a ROS people-tracking package from ~\cite{leigh2015person} to record pedestrian trajectories with an onboard 
 Velodyne laser scanner.
 %\commentp{to do what?}
 
 %Preliminary results are shown in Fig.~\ref{fig:pre_result}. 
-Based on the observed frequency of intention communication and the safety margins 
-kept from the robot, we are able to informally categorize people into four groups, 
+Based on the observed frequency of intention communication\commentp{How is the frequency of intention communication measured?} and the safety margins 
+kept from the robot, we informally categorize people into four groups, 
 displaying different assumptions about the robot:
 \begin{enumerate}
   \item Cautious people, who assume the robot to be unsafe and avoid the robot,
@@ -889,6 +889,7 @@ displaying different assumptions about the robot:
 %\commentp{You don't say how you categorize people in this way.  Based on what features?}
 Due to space constraint, graphical illustration of preliminary results are 
 shown in the workshop session for discussion. 
+\commentp{I don't think we need that last sentence.  Replace with a sentence about ongoing work.}
 %We observed only people who assume the 
 %robot to be safe (such as comfortable people) appear interactive with the 
 %robot during crossing. Their paths exhibit larger variance. Other participants 
