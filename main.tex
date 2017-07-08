@@ -331,7 +331,6 @@ Similarly, we denote the ''opponent's'' position $x^o$ and velocity $v^o$. We as
 people plan with a receding-horizon strategy, namely to plan ahead for a fixed 
 horizon from time $t$ to $t+N$, act according to $u_t$, and start over on the 
 next time step $t+1$:
-
 %constraints on 
 %the temporal collisions with 
 %(adaptive) safety margins $r^{saf}$. \commentp{Is that a sentence fragment left over from something?  There needs to be some lead in to the equations such as what I suggested below.}
@@ -586,7 +585,7 @@ to go instead of the entire trajectory prediction.
 We therefore propose to seek for a much simpler predictor over pedestrian path 
 crossing decision manifold: to pass from the front ($a^P$) or behind($a^A$), 
 through logistic regression,
-\begin{equation}
+\begin{equation}~\label{eq:logi}
 p(a=a^P|\xi^p_t, s_t) \sim \frac{1}{1+e^{w^Tf(\xi^p_t, s_t)}}.
 \end{equation}
 Here, $s_t = [x^p_t$, $v^p_t$, $x^o_t$, $v^o_t]$ is the state of the overall 
@@ -596,8 +595,8 @@ pedestrian's the dynamic patterns, and $f$ is a feature function.
 
 %%%%crossing function
 
-We propose to iteratively learn this predictive model through robot's real-world 
-deployment. Since people are also adaptive about their reaction to a robot, 
+We propose to iteratively learn this predictive model through the robot's real-world 
+deployments. Since people are also adaptive about their reaction to a robot, 
 new types of behaviors may be observed over time.
 
 \vspace{-.3em}
@@ -619,7 +618,7 @@ or to passively cross from behind by slowing down($a^P$).
 %(passive traversal $a^P$), which often leads to short paths that do not much 
 %deviate from the original undisturbed paths (also suggested in 
 %~\cite{kruse2012legible}). Or we speed up to show the 
-%aggressive intention to temporally occupy the crossing agent's workspace (active 
+%aggressive intention to temporally occupy the crossing agent's w orkspace(active 
 %traversal $a^A$). 
 
 %% in HRI, legible motion is important; 
@@ -640,25 +639,36 @@ the robot's intention of crossing in a human-familiar manner.
 %fom modeling learning, also important to model the strategy over robot predictable motions, to 
 %reduce the noisy motion due to uncertainty of robot future trajectoryi
 %% \commentl{Intention communication in game theory??}
-Intention communication is commonly observed in crowd navigation, to allow agents to reach 
-consensus on the ways the two agents are going to avoid one another. 
---------------
-
-Based on safety concerns and travel efficiency expectation, before the person 
-react to this potential collision, the robot can 
-decide to communicate intention $a^r= (a^P$ or $a^A$) through legible motion 
-realization ($\xi^A$ or $\xi^A$),
+Intention communication is commonly observed in crowd navigation, to allow two 
+self-interested agents to reach 
+consensus on the ways they are going to avoid one another, based on their 
+indicated future trajectories. To enable 
+such communication and predict the potential behavior change of the confronting 
+pedestrian, we propose a predictive model following the formulation in 
+Eq.~\ref{eq:logi}, taking into account the robot's action $a^r$ (designed as 
+to follow human crossing dynamic patterns):
 \begin{equation}~\label{eq:transition}
-p(a^p=a^P|\xi_t, a^r) \sim \frac{1}{1+e^{w^Tf(\xi_t,a^r)}},
+p(a^p=a^P|\xi_t, s_t, a^r) \sim \frac{1}{1+e^{w^Tf(\xi_t,s_t,a^r)}}.
 \end{equation}
-and use this intention transition predictor for look-ahead planning.
+Note that, enabling predictable motions not only enhances human trust to the 
+robot, but also reduces the noise in the crossing pedestrian's motion that is 
+caused by his/her uncertainty of the robot's future behavior.
 
-This process can only be iteratively learnt through robot real-world 
-deployment, considering people are also learning the maneuver of the robot.
+Such model enables prediction that takes into account the 
+robot's crossing action, and facilitates realistic look-ahead planning. 
+Same for the training in Eq.~\ref{eq:logi}, we propose to iteratively learn 
+this predictive model in real-world robot 
+deployments. Since people are also adaptive about their reaction to a robot, 
+new types of behaviors may be observed over time.
+%Based on safety concerns and travel efficiency expectation, before the person 
+%react to this potential collision, the robot can 
+%decide to communicate intention $a^r= (a^P$ or $a^A$) through legible motion 
+%realization ($\xi^A$ or $\xi^A$),
+%\begin{equation}~\label{eq:transition}
+%p(a^p=a^P|\xi_t, a^r) \sim \frac{1}{1+e^{w^Tf(\xi_t,a^r)}},
+%\end{equation}
+%and use this intention transition predictor for look-ahead planning.
 
-%% \omega: different preference of intention results in omega. why, exactly? 
-%%we assume: different people have different preferences in crossing, and have different
-%%response to a robot's indicated motion. Why would this happen?
 
 %While intention affects the speed pattern of the path taken, it also has 
 %correlation with interaction preferences, which correspond to different $\omega$ 
@@ -668,21 +678,7 @@ deployment, considering people are also learning the maneuver of the robot.
 %differs with different intentions; same is true for the homotopy class the 
 %path belongs to.
 
-%% is it opponent hypothesis? when we encounter different people, wondering 
-%%around, fast and direct, our crossing decision might be different. Is it 
-%%because of our assumption/interpretation about their intention. 
-%%the interpretation of a robot, and a robot's 
-%%intended action?
 
-People usually pose the hypothesis that, during navigation in crowds, other 
-people are able to \textit{understand intention expressive motions} and \textit{respond safely 
-and friendly} 
-accordingly. However, during human-robot interaction, this hypothesis may not 
-necessarily hold, based on our preliminary study on the robot's real-world 
-deployment. It was common feedback that people described themselves as 
-``aware'' of the robot, which we interpreted as ``requiring attention''. They 
-also suggested that they were not navigating as 
-comfortably as were in human crowds.
 \begin{figure}[tb]
   \begin{center}
   \hspace*{-2em}
@@ -698,43 +694,85 @@ comfortably as were in human crowds.
 \vspace{-0.05in}
 \label{fig:behavior}
 \end{figure}
-\vspace{-.3em}
+\vspace{-.5em}
 \subsection{Human Decision Model considering Opponent Status and Intention Hypothesis}
-We therefore propose to model people's decision making process during 
-traversal considering both self stimulus and opponent agent hypothesis, as 
-shown in Fig.~\ref{fig:behavior}. More specifically, we consider sources of 
-stimulus based on levels of response time and frequency of variation. For 
-example, goal and interest are usually fixed during the entire navigation 
-process. Immediate instances such as unexpected turns of nearby agents cause 
-direct threat and therefore stimulate responses quickly.
+%People commonly pose the hypothesis, during 
+%navigation in crowds, other agents are able to understand intention expressive 
+%motions and respond safely and friendly. However, during human-robot 
+%interaction, this hypothesis may not necessarily hold
+During the human-robot interaction experiments, it was common feedback that 
+people described themselves as ``aware'' of the robot, which we interpreted as 
+``requiring attention''. Those people also suggested that they were not navigating as 
+comfortably as were in human crowds. However, there are opposite opinions as 
+well, suggesting to feel comfortable navigating around the same robot, under 
+the same implemented policy. 
 
-Our subject, the human traversal actions in crowds, are considered as potential 
-threat due to possible future collision. It has certain response time after 
-observing a confronting agent; it relies assumptions on 
-opponent behaviors, to make the traversal decision that maximizes the person's 
-own utility. 
+%% \omega: different preference of intention results in omega. why, exactly? 
+%%we assume: different people have different preferences in crossing, and have different
+%%response to a robot's indicated motion. Why would this happen?
+%% is it opponent hypothesis? when we encounter different people, wondering 
+%%around, fast and direct, our crossing decision might be different. Is it 
+%%because of our assumption/interpretation about their intention. 
+%%the interpretation of a robot, and a robot's 
+%%intended action?
+Going back to Eq.~\ref{eq:receding_control}, we desire to model the 
+pedestrian's crossing response over a robot, and we desire to understand the 
+mechanism behind the decision making process over crossing behaviors, so we 
+can answer: why do the responses differ so much among different people? How do 
+people perceive the robot and its intention? 
 
-Here, we list out the opponent assumptions on his status, defined as the 
-abstract psychological state, and intention, defined as the potential 
-action of interest. The opponent status can be estimated based on past 
-observations, such as to distinguish if she is wondering in the hallway, or 
-traveling towards a specific goal. The intention is what we care about the most at 
-the end: is she going to cross me in the front or wait?
+We therefore look into the psychological model of human decision making 
+process, and propose to model the diverse crossing strategies among people 
+over their different assumptions on the opponent agent. This model takes into their 
+consideration over personal goal and environmental variables, 
+and their hypothesis over the opponent behavior, as 
+shown in Fig.~\ref{fig:behavior}. We consider sources of 
+stimulus (the input of the pedestrian's decision making process) with 
+different levels of response time (psychological tension) and frequency of 
+that instance to vary. For example, goal and interest are usually fixed during 
+the entire navigation process. Immediate instances such as unexpected turns 
+of nearby agents cause direct threat and therefore stimulate reaction quickly.
 
-In human-robot interaction, the status goes beyond: is the person comfortable 
-with the robot? Does she perceive the robot 
-to be safe? As for intentions, we might further consider: is the person 
-blocking/following the robot? 
+Our subject, the human crossing behavior in crowds, is considered as potential 
+threat, with certain response time after observing a confronting agent, (which 
+we modeled in Eq.~\ref{eq:receding_control} as variable $n$). The crossing 
+decision of human is modeled to rely assumptions on opponent behaviors, so the 
+person can maximize his/her own utility. 
 
-In each case, we incorporate the opponent agent's influence into the decision 
-making process. With that said, his action is taken into account while people 
-consider their own actions. 
+The person's assumption over the opponent's status can be estimated based on past 
+observations, such as to distinguish if the other agent is wondering in the atrium or 
+traveling towards a specific goal. The person can also estimate the opponent's 
+intention, and act according to their optimal strategy based on the 
+assumptions. For example, if the opponent is walking and wondering slowly, the 
+person assumes he/she to give way; even if the opponent speeds up, he/she may 
+still be slow and easy for the person to cross from in front.
+
+As for the human-robot interaction in our goal-focused task scenario, we 
+propose people to have different response to the robot due to the different 
+assumptions on following items, based on test response suggested in Section~\ref{sec:pre}:
+\begin{enumerate}
+  \item the perception of robot identity: is the robot non-self-interested or self-interested?
+  \item the capability to maintain safe: is the robot safe to be around? Can 
+    the robot see me from here?
+  \item the capability to communicate intention: is the robot going to 
+    understand my intention? Will the robot give way if I proceed from its front?
+\end{enumerate}
+
+
+%the status goes beyond: is the person comfortable 
+%with the robot? Does she perceive the robot 
+%to be safe? As for intentions, we might further consider: is the person 
+%blocking/following the robot? 
+
+%In each case, we incorporate the opponent agent's influence into the decision 
+%making process. With that said, his action is taken into account while people 
+%consider their own actions. 
 %%we hypothesis: people perceive the robot goal oriented, but the goal 
-priority might be less important. They may perceive the robot as safe or 
-unsafe, which largely affect their safety margin, response time, dynamic patterns.
+%priority might be less important. They may perceive the robot as safe or 
+%unsafe, which largely affect their safety margin, response time, dynamic patterns.
 
 \vspace{-.3em}
-\subsection{Preliminary Results}
+\subsection{Preliminary Results}~\label{sec:pre}
 %heading variation suggests interactability
 %different safety margins on traversal type decision
 %psychology tension oh reaction time
@@ -743,19 +781,19 @@ unsafe, which largely affect their safety margin, response time, dynamic pattern
 %% intent expressive motion in a human-friendly way?
 Based on the above, we first study:
 \begin{enumerate}
-\item the opponent hypothesis in human-robot interaction, assuming 
-  self-interested behaviors in a game setting: how people perceive the robot, 
-  and decide their actions, in a goal-focused task?
+\item the opponent assumptions in human-robot interaction, assuming 
+  people to perform self-interested behaviors in a goal-focused task
 \item the dynamic patterns during human traversal around a robot: how people 
-  express their traversal intentions and what they expect on the robot's 
+  express their crossing intentions and what they expect on the robot's 
   response?
 \end{enumerate}
 
 We conduct experiments in an atrium with the robot following pre-assigned 
 routes. We first show the participants how the robot runs the task, and then 
-ask them to travel between four sets of waypoints that collision may happen in 
+ask them to travel between four sets of waypoints that collision with the 
+robot may happen in 
 between. Each participant takes the experiment twice, with different values of 
-safety margin ($0.3m$ and $1m$) that the robot keeps from the collision. Six 
+safety margin ($0.3m$ and $1m$) that the robot keeps from the pedestrian. Six 
 people were invited in the test, with no prior experience to interact with the 
 tested platform. We adopt a ROS people tracking package from ~\cite{leigh2015person}
 on a Velodyne laser scanner. 
@@ -764,29 +802,43 @@ on a Velodyne laser scanner.
 Due to space constraint, graphical illustration of preliminary results are 
 shown in the workshop session for discussion. 
 
-We categorize people into four groups, based on their assumption of the 
-robot's safety criteria (perceived opponent status), and their expectation on 
-robot intention (opponent potential action), as being: cautious, comfortable, 
-overly comfortable, or aggressive to the robot. Only people who assume the 
-robot to be safe appear interactive to the robot during traversal. Others 
-navigate straight to their goals with non-interactive routes, such as active 
-passage with large safety margins. They also tend to react to potential 
-collision much more in advance compared to (overly)comfortable people. 
+We categorize people into four groups, with different assumptions of the 
+robot:
+\begin{enumerate}
+  \item Cautious people, who assume the robot to be unsafe and avoid the robot,
+  \item Overly-comfortable people, who assume the robot to be safe and 
+    non-self-interested. They assume the robot to always give way to human;
+  \item Comfortable, interactive people, who assume the robot to be safe and 
+    are willing to indicate intention. They change strategies when the robot's 
+    action is mismatched with their expectation;
+  \item Aggressive people, who largely prefer to actively take way, possibly 
+    resulting in large deviation from their original paths.   
+\end{enumerate}
+%'s safety criteria (perceived opponent status), and their expectation on 
+%robot intention (opponent potential action), as being: cautious, comfortable, 
+%overly comfortable, or aggressive to the robot. 
 
-Cautious people assume the robot to be unsafe and avoid the robot. Overly-comfortable 
-people assume the robot to be safe and expect the robot to be only passively avoiding when 
-humans take active action. Comfortable people assume the robot safe and change 
-their actions when the robot's action is mismatched with their expectation. 
-For example, they try to actively traverse the robot, but hold when they see 
-the robot not immediately responding to their action. Aggressive people 
-largely prefer to actively take way even with much deviation from the original path. 
+We observed only people who assume the 
+robot to be safe appear interactive to the robot during crossing. Their paths 
+exhibit larger variance. Other participants navigate straight to their goals 
+with non-interactive routes, such as active 
+passage with large safety margins. Those people also tend to react to the crossing decision 
+much more in advance, compared to (overly)comfortable people. 
 
-The traversal maneuvers we observed fell into our proposed two homotopy 
-classes, although interactive people may change their actions during the 
-interaction. We propose to pursue this process as \textit{intention communication}, 
-which converges when two agents reach consensus, and aim at enhancing the 
-smoothness and efficiency of this process through intention-expressive robot 
-motions.
+%Cautious people assume the robot to be unsafe and avoid the robot. Overly-comfortable 
+%people assume the robot to be safe and expect the robot to be only passively avoiding when 
+%humans take active action. Comfortable people assume the robot safe and change 
+%their actions when the robot's action is mismatched with their expectation. 
+%For example, they try to actively traverse the robot, but hold when they see 
+%the robot not immediately responding to their action. Aggressive people 
+%largely prefer to actively take way even with much deviation from the original path. 
+
+%The traversal maneuvers we observed fell into our proposed two homotopy 
+%classes, although interactive people may change their actions during the 
+%interaction. We propose to pursue this process as \textit{intention communication}, 
+%which converges when two agents reach consensus, and aim at enhancing the 
+%smoothness and efficiency of this process through intention-expressive robot 
+%motions.
 
 %\begin{figure*}[tb]
 %  \begin{center}
@@ -875,12 +927,13 @@ motions.
 %the pedestrian is intentionally blocking the robot.
 %%The decisions of pedestrians are modeled on both waypoint selections (mixture model on different ho%motopy classes, based on speed, relative speed, spacing, and safety margins) and speed pattern adapt%ation (adaptive slow down or speed up to avoid collision, based on the same features). 
 
-\section{Future Work}
-We look forward to seeing the transition dynamics described in Eq.~\ref{eq:transition} 
-in real-world deployment, and use the pedestrian type features to better study 
-the cost function formulation in Eq.~\ref{eq:social_cost}. After all, there is 
-unresolved conflicts in human navigation models, such as the statement on 
-visibility for planning~\cite{kruse2012legible} and dynamics modeling~\cite{helbing1995social}.
+%\section{Future Work}
+%%% better address intention communication in a game setting, and cost function modeling
+%We look forward to seeing the transition dynamics described in Eq.~\ref{eq:transition} 
+%in real-world deployment, and use the pedestrian type features to better study 
+%the cost function formulation in Eq.~\ref{eq:social_cost}. After all, there is 
+%unresolved conflicts in human navigation models, such as the statement on 
+%visibility for planning~\cite{kruse2012legible} and dynamics modeling~\cite{helbing1995socia%l}.
 
 %% is it ok to cross from behind? From the social force, yes; from the social 
 %% proximity on visibility - no. 
