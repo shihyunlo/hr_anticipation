@@ -643,9 +643,11 @@ average velocity, velocity variance, and heading variance.
 
 Observations of past interactions are also informative of the person's
 path crossing preferences. For example, we can count the number of
-passive crossing $\alpha$ and active crossing $\beta$, and pose a Beta
-function as the prior over the passive crossing decision $a^P$ as:
-$Beta(\alpha+1, \beta+1)$.\commentp{it's awkward to use Beta as the function and the variable...} However, diagnosis of past interactions is
+passive crossing $p$ and active crossing $q$, and pose a Beta
+distribution as the conjugate prior over the passive crossing decision $a^P$ as:
+$Beta(p+1, q+1)$.
+%\commentp{it's awkward to use Beta as the function and the variable...} 
+However, diagnosis of past interactions is
 not necessarily easy to come by with limited sensing.
 
 We propose to iteratively learn the parameter $w$ in this predictive model
@@ -788,7 +790,7 @@ mechanism behind the decision making process over crossing behaviors, so we
 can answer: why do the responses differ so much among different people? We 
 start by proposing a hypothesis that people have very different perception of the 
 robot's behavior and intention, and introduce a psychological model of human decision
-making, process over crossing strategies, as shown in Fig.~\ref{fig:behavior}.
+making process over crossing strategies, as shown in Fig.~\ref{fig:behavior}.
 
 This model takes into account their personal goal and
 environmental variables, and their hypothesis over the opponent
@@ -800,14 +802,15 @@ usually fixed during the entire navigation process. Immediate
 instances such as unexpected turns of nearby agents cause direct
 threat and therefore stimulate reaction quickly.
 
-\commentp{I still have no idea what the point of this paragraph is.}
-Our subject, human crossing behavior in crowds, is considered as potential 
-threat with some response time of reaction, which may be influenced by the 
-opponent's behavior.
+%\commentp{I still have no idea what the point of this paragraph is.}
+\commentl{I was to explain that people have different reactions to different 
+opponent, which is modeled in the process}
+Our subject, human crossing behavior in crowds, is considered as the reaction 
+to potential threat, which has longer response time compared to other 
+stimulus, and is influenced by the opponent's behavior as well as intention.
 %(which we modeled in Eq.~\ref{eq:receding_control} as variable $n$)
-The crossing 
-decision of human is modeled to rely on assumptions about opponent behavior, so the 
-person can maximize his/her own utility. 
+This human crossing path decision is modeled to rely on assumptions about 
+opponent, such that the person can maximize his/her own utility. 
 
 %\commentp{I don't undrestand this paragraph}
 %The person's assumption over the opponent's status can be estimated based on past 
@@ -870,8 +873,9 @@ Velodyne laser scanner.
 %\commentp{to do what?}
 
 %Preliminary results are shown in Fig.~\ref{fig:pre_result}. 
-Based on the observed frequency of intention communication\commentp{How is the frequency of intention communication measured?} and the safety margins 
-kept from the robot, we informally categorize people into four groups, 
+Based on the observations on 
+%\commentp{How is the frequency of intention communication measured?}
+how far people kept from the robot (the safety margins), and how they interacted with the robot during crossing, we informally categorize people into four groups, 
 displaying different assumptions about the robot:
 \begin{enumerate}
   \item Cautious people, who assume the robot to be unsafe and avoid the robot,
@@ -887,9 +891,9 @@ displaying different assumptions about the robot:
 %robot intention (opponent potential action), as being: cautious, comfortable, 
 %overly comfortable, or aggressive to the robot. 
 %\commentp{You don't say how you categorize people in this way.  Based on what features?}
-Due to space constraint, graphical illustration of preliminary results are 
-shown in the workshop session for discussion. 
-\commentp{I don't think we need that last sentence.  Replace with a sentence about ongoing work.}
+%Due to space constraint, graphical illustration of preliminary results are 
+%shown in the workshop session for discussion. 
+%\commentp{I don't think we need that last sentence.  Replace with a sentence about ongoing work.}
 %We observed only people who assume the 
 %robot to be safe (such as comfortable people) appear interactive with the 
 %robot during crossing. Their paths exhibit larger variance. Other participants 
@@ -931,7 +935,7 @@ shown in the workshop session for discussion.
 %    Dashed lines correspond to paths before closest interaction.}
 %\label{fig:pre_result}
 %\end{figure*}
-\vspace{-.3em}
+%\vspace{-.3em}
 %\subsection{Mathematical Models}
 %In situations where past observations are non-expressive to 
 %distinguish human traversal types, safe and 
@@ -1001,13 +1005,14 @@ shown in the workshop session for discussion.
 %%The decisions of pedestrians are modeled on both waypoint selections (mixture model on different ho%motopy classes, based on speed, relative speed, spacing, and safety margins) and speed pattern adapt%ation (adaptive slow down or speed up to avoid collision, based on the same features). 
 
 %\section{Future Work}
-%%% better address intention communication in a game setting, and cost function modeling
+%% better address intention communication in a game setting, and cost function modeling
 %We look forward to seeing the transition dynamics described in Eq.~\ref{eq:transition} 
 %in real-world deployment, and use the pedestrian type features to better study 
 %the cost function formulation in Eq.~\ref{eq:social_cost}. After all, there is 
 %unresolved conflicts in human navigation models, such as the statement on 
-%visibility for planning~\cite{kruse2012legible} and dynamics modeling~\cite{helbing1995socia%l}.
-
+%visibility for planning~\cite{kruse2012legible} and dynamics modeling~\cite{helbing1995social}.
+We intend to collect more data to allow robust prediction on human path 
+crossing decision before and after the robot indicates intention (shown in Eq.~\ref{eq:logi}~\ref{eq:transition}).
 %% is it ok to cross from behind? From the social force, yes; from the social 
 %% proximity on visibility - no. 
 
