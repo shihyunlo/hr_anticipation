@@ -19,7 +19,16 @@ By calculating the crossing timings of both agents, rational/objective decisions
 
 While inaccurate relative velocity impairs smoothness in human navigation due to the uncertainty in planning, people usually get a way to reach consensus quickly. However, when encountering a robot crossing, the decision over which way/how to avoid appears largely variant among different people, simply because people do not know how to anticipate robot's motion in such scenarios.
 
-Humans follow several rules to guide their navigation in human-populated environments. For example, they follow people with the same short-term subgoal; in the U.S., people keep right on the curb and overtake the road from the left, which is the opposite in Japan~\cite{zanlungo2012microscopic}. In crossing situations, it is commonly observed that people decide one way to avoid and indicate through eye contact for one time. After that, they stick to that path and do not adapt their decision. This somehow reckless behavior is supported by the norm that the agent with better visibility to each other is obliged to route adaptation.
+Humans follow several rules to guide their navigation in human-populated 
+environments. For example, they follow people with the same short-term 
+subgoal; in the U.S., people keep right on the curb and overtake the road from 
+the left, which is the opposite in Japan~\cite{zanlungo2012microscopic}. When 
+approaching each other, people often make brief eye contact while 
+communicating with body language which way they intend to pass each other, and 
+then avoid looking at each other afterwards so that there is no chance of 
+future confusion.
+%In crossing situations, it is commonly observed that people decide one way to avoid and indicate through eye contact for one time. After that, they stick to that path and do not adapt their decision. 
+This somehow reckless behavior is supported by the norm that the agent with better visibility to each other is obliged to route adaptation.
 
 However, when considering navigating around a robot, such norms are no longer obeyed, or presumably obeyed, by the robot, simply because of the lack of knowledge of the robot's capability. It is unclear to a person, if the robot sees the dynamic agent; even if he/she thinks it sees the pedestrian, the anticipation of how and when the robot will avoid is not commonly established. We therefore observe people frequently yielding to the robot during crossing, staying away from a large distance even when overtaking the route. From the above, we can conclude that people have high uncertainty about the robot's motion, and it is largely affecting their behaviors around the robot, especially in crossing situations where certain social norms are presumed.
 
@@ -34,7 +43,12 @@ a^H_t \sim \pi^H (\hat{x}^H_t, \hat{x}^R_t, b(\pi^R (\hat{x}^R_t, \hat{x}^H_t,b(
 \end{equation}
 where the state vectors $x^H, x^R$ represent the positions and velocities of the human and the robot. $a^H$ is the action, in the form of acceleration, of the human. The policy of human $\pi^H$ is modeled to take in his/her noisy estimate of the states $\hat{x}^H$ and $\hat{x}^R$ due to imperfect sensing capability, and the \textbf{belief} of the other agent's policy. We call this the first step anticipation. 
 
-While one can take in the robot's belief of human's policy in the human's belief of the robot's policy to continue the second step anticipation for equilibrium study, we propose this to be computationally too expensive for human's online processing to deal with dynamic environments, therefore we only consider it to the first step, to approximate the decision making process to, "what would the robot do when I do this", as:
+While one can take in the robot's belief of human's policy in the human's 
+belief of the robot's policy to continue the second step anticipation for 
+equilibrium study, we hypothesize that this is computationally too expensive 
+for human's online processing to deal with dynamic environments, therefore we 
+only consider it to the first step, to approximate the decision making process 
+to, "what would the robot do when I do this", as:
 \begin{equation}
 a^H_t \sim \pi^H (\hat{x}^H_t, \hat{x}^R_t, b(\pi^R (\hat{x}^R_t, \hat{x}^H_t,a^H_t ))).
 \end{equation}
