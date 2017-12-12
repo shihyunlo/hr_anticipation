@@ -3,10 +3,14 @@
 
 \title{Mathematical model for human-robot motion anticipation in crowd navigation}
 \author{Shih-Yun Lo}
-\date{September 2017}
 
 \usepackage{natbib}
 \usepackage{graphicx}
+\usepackage{verbatim}
+\usepackage{amsmath,amssymb}
+
+\newcommand{\argmin}{\arg\!\min}
+\newcommand{\argmax}{\arg\!\!\max}
 
 \begin{document}
 
@@ -19,16 +23,7 @@ By calculating the crossing timings of both agents, rational/objective decisions
 
 While inaccurate relative velocity impairs smoothness in human navigation due to the uncertainty in planning, people usually get a way to reach consensus quickly. However, when encountering a robot crossing, the decision over which way/how to avoid appears largely variant among different people, simply because people do not know how to anticipate robot's motion in such scenarios.
 
-Humans follow several rules to guide their navigation in human-populated 
-environments. For example, they follow people with the same short-term 
-subgoal; in the U.S., people keep right on the curb and overtake the road from 
-the left, which is the opposite in Japan~\cite{zanlungo2012microscopic}. When 
-approaching each other, people often make brief eye contact while 
-communicating with body language which way they intend to pass each other, and 
-then avoid looking at each other afterwards so that there is no chance of 
-future confusion.
-%In crossing situations, it is commonly observed that people decide one way to avoid and indicate through eye contact for one time. After that, they stick to that path and do not adapt their decision. 
-This somehow reckless behavior is supported by the norm that the agent with better visibility to each other is obliged to route adaptation.
+Humans follow several rules to guide their navigation in human-populated environments. For example, they follow people with the same short-term subgoal; in the U.S., people keep right on the curb and overtake the road from the left, which is the opposite in Japan~\cite{zanlungo2012microscopic}. In crossing situations, it is commonly observed that people decide one way to avoid and indicate through eye contact for one time. After that, they stick to that path and do not adapt their decision. This somehow reckless behavior is supported by the norm that the agent with better visibility to each other is obliged to route adaptation.
 
 However, when considering navigating around a robot, such norms are no longer obeyed, or presumably obeyed, by the robot, simply because of the lack of knowledge of the robot's capability. It is unclear to a person, if the robot sees the dynamic agent; even if he/she thinks it sees the pedestrian, the anticipation of how and when the robot will avoid is not commonly established. We therefore observe people frequently yielding to the robot during crossing, staying away from a large distance even when overtaking the route. From the above, we can conclude that people have high uncertainty about the robot's motion, and it is largely affecting their behaviors around the robot, especially in crossing situations where certain social norms are presumed.
 
@@ -38,19 +33,33 @@ To address the mismatched human navigation behaviors between that around a human
 One common feedback of people crossing a robot is, "I don't know how to predict where the robot is going". We also have seen people trying to pass in front of the robot, but hesitated after approaching the robot without receiving its imminent yielding response. We not only consider what the other agent is going to do, but also what the agent will \textbf{react} to my action: if people assume that the robot will not yield in collision-dangerous situations, or will avoid in an unpredictable fashion, they tend to take relatively conservative actions: they tend to yield even when he/she is supposed to lead the crossing situation, or they watch the robot constantly and keep a large safety distance during the crossing period.  
 
 To model the above behavior, we propose the following formulation of human's decision with anticipation of other agent's policy:
-\begin{equation}
-a^H_t \sim \pi^H (\hat{x}^H_t, \hat{x}^R_t, b(\pi^R (\hat{x}^R_t, \hat{x}^H_t,b(\pi^H) ))) ,
+\begin{equation}~\label{eq:human_decision}
+a^H_t \sim \pi^H (x^H_t, \hat{x}^R_t, b^H(\pi^R (x^R_t, \hat{x}^H_t,b^R(\pi^H) ))) ,
 \end{equation}
+
+\begin{comment}
+$$
+p(x^H_{t+1:T}|\textbf{x}^H_{1:t},\textbf{x}^O_{1:t},\textbf{a}^O_t)
+$$
+$$
+a^H_t \sim \pi^H (x^H_t, \hat{\textbf{x}}^O_t, b^H(\pi^O (x^O_t, \hat{\textbf{x}}^H_t,b^O(\pi^H) ))) 
+$$   
+$$
+\pi^O_{min} = argmin_{\pi^O \in \Pi^O} V^H(x^H_t,a^H, \hat{x}^O, \pi^O)
+$$
+$$
+a^{*H}_t = argmax_{a^H \in A^H} V^H(x^H_t, a^H ,\hat{x}^R,\pi^O_{min})
+$$
+$$
+\gamma < \epsilon
+$$
+\end{comment}
+
 where the state vectors $x^H, x^R$ represent the positions and velocities of the human and the robot. $a^H$ is the action, in the form of acceleration, of the human. The policy of human $\pi^H$ is modeled to take in his/her noisy estimate of the states $\hat{x}^H$ and $\hat{x}^R$ due to imperfect sensing capability, and the \textbf{belief} of the other agent's policy. We call this the first step anticipation. 
 
-While one can take in the robot's belief of human's policy in the human's 
-belief of the robot's policy to continue the second step anticipation for 
-equilibrium study, we hypothesize that this is computationally too expensive 
-for human's online processing to deal with dynamic environments, therefore we 
-only consider it to the first step, to approximate the decision making process 
-to, "what would the robot do when I do this", as:
+While one can take in the robot's belief of human's policy in the human's belief of the robot's policy to continue the second step anticipation for equilibrium study, we propose this to be computationally too expensive for human's online processing to deal with dynamic environments, therefore we only consider it to the first step, to approximate the decision making process to, "what would the robot do when I do this", as:
 \begin{equation}
-a^H_t \sim \pi^H (\hat{x}^H_t, \hat{x}^R_t, b(\pi^R (\hat{x}^R_t, \hat{x}^H_t,a^H_t ))).
+a^H_t \sim \pi^H (x^H_t, \hat{x}^R_t, b^H(\pi^R (x^R_t, \hat{x}^H_t,a^H_t ))).
 \end{equation}
 While there may be different policy assumptions in human's navigation behavior for collision avoidance, due to the nature of resource conflict, we consider human's decision making formulation, as a minimax process, where the person is going to select the action (or policy) that outputs the best value consider the worst case scenarios:
 \begin{equation}
@@ -75,16 +84,58 @@ A stochastic policy can take in, for example, the softmax representation commonl
 p(a^{*H}) \propto exp( V^H(\hat{x}^H_t, a^H ,\hat{x}^R,\pi^R_{min})).
 \end{equation}
 
-\section{Social Force Model}
+\section{Literature Review on Crowd Simulation and the Application on Robotics}
+Force-based models~\cite{helbing1995social, reynolds1987flocks} have shown great success to large-scale crowd behavior simulation~\cite{treuille2006continuum, pelechano2007controlling} in different domain configurations and terrains.
 
+%centralized behavior assumptions
+Among those simulations, centralized decisions assuming full-awareness and optimal planning are commonly imposed in the pedestrian model. However, in real-world perceptions, lack of awareness, low visibility to the surroundings, and inaccurate sensing commonly induce sub-optimal behaviors in crowds; moreover, due to the uncertainty to unfamiliar agents, conservative collision avoidance behaviors can be frequently observed among pedestrians. For behavior prediction in human crowds, idealized assumptions seem insufficient to describe the true dynamics in pedestrians. 
 
+%what people have done to simulate different pedestrian behaviors
+In \cite{guy2011simulating}, different navigation behaviors for long-horizon planning are described based on psychology models over personality~\cite{eysenck1985personality}, such as shy, aggressive, tense, impulsive...etc. For robot navigation in crowds, a Beyesian inference approach was proposed to estimate different navigation behaviors~\cite{godoy2016moving} (yet they tested over simulated data instead of true human crowds, using their own hypothesized behavior models).
 
-% 2. single agent decision making model to incorporate hri:
-% 1. applying SFM for prediction: from a technical perspective
-% 3. challenge: apply SFM for stochastic decisions, and the stochacity in SADMM
+% to motivate the modeling of robot policy into human decision-making process
+Despite the approach to identify the specific types of the heterogeneous agents based on hypothesized behaviors, in human decision making, the opponents (or generally other agents) behaviors often have non-negligible effects on human decisions, which is especially true when personal interests may be compensated based on different opponent reactions.
 
+% the capability of the model to describe human behaviors
+With our mathematical model on human decision making, we can distinguish  behaviors based on worst case scenario estimates (with different opponent strategy assumption and horizon for predictions) and personalized value functions on navigation preferences, to better describe heterogeneous navigation behaviors taking into account assumptions over robot actions. 
 
+More specifically,
 
+-------
+
+While simulating for long-horizon human collision-avoidance behaviors, intention changes/adaptation due to false opponent behavior anticipation or irrational avoidance decisions have been observed~\cite{paris2007pedestrian}. Yet, there hasn't been a model to describe such realistic long-horizon collision-avoidance behaviors, to avoid conflicting states (suggested as close entities face to face in ~\cite{paris2007pedestrian}) in sparse environments or jerky trajectories in dense environments with successive and contradictory re-orientations or turn-backs.
+
+From a multi-agent dynamic obstacle avoidance perspective, approaches have been proposed to smoothly navigate among movable agents through the prediction and adjustment of collision timing~\cite{van2008reciprocal,van2011reciprocal}. However, crowd dynamics are reactive to other pedestrians and the robot. To deploy a robot smoothly in crowds, applying crowd behavior model to predict collision timings/locations among pedestrians remains an unsolved challenge.
+
+\section{Preliminaries}
+\subsection{Problem statement in continuous state space}
+Here we consider a robot and a human navigating in a 2D environment. The state of both the robot $x^R_t$ and the human $x^H_t$ include their positions $p_t^R, p_t^H\in\mathcal{R}^2$, and their velocities $v^R, v^H\in \mathcal{R}^2$. We assume that they have good knowledge/estimate of the initial/desired velocities of both agents, $v_0^R,v_0^H\in \mathcal{R}^2$, which they intend to maintain during the time period of path intersections. The two agents may experience intersections/crossings, if
+$$
+\exists t, s.t. |p_t^R-p_t^H| < r,
+$$
+in which case they need to adjust their motions (e.g. their velocities) to prevent themselves from colliding with each other. $r\in \mathcal{R}$ is a variable of safety distance in social navigation. The physical configuration of the crossing scenario, denoted as the state of the overall system, $x_t$, can be defined through $x^R_t,x^H_t v_0^R$, and $v_0^H$. 
+
+Besides the above observable variables, each agent has their own navigation preferences, parametrized by some hidden variables $z^R, z^H$, which we assume to be constant but not directly observable but themselves. Those parameters affect the agents' policies $\pi^R, \pi^H$, therefore affect the actions they take. Each agent has their own belief over the hidden variables of the other agent, $b^H(z^R), b^R(z^H)$, to estimate and predict the other agent's actions. This belief is updated online according to new observations made during the interaction. 
+
+We revisit the human decision-making model in Eq.~\ref{eq:human_decision}, and abbreviate the formulation:
+\begin{equation}
+    a^H_t \sim \pi^{H} (x_t,b^H(z^R)),
+\end{equation}
+where the human's policy $\pi^H$, parametrized by $z^H$, is affected by the physical configuration of crossing $x_t$ and the human's belief of the robot's hidden policy parameters $b^H(z^R)$. This formulation, along with Eq.~\ref{eq:human_decision}, lie in between value iteration (planning in static environment) and POMDP planning (planning with partial observability). While we assume that our agents have good observability of the current state and environment, there is still uncertainty in the prediction process to estimate the long-term value of current actions. The predictive model may take in the whole-history actions (that the other agent has taken so far) to maintain the belief to predict their future motions. As the predictive model is being updated online based on new observations, so is the value function to select the best actions. 
+
+While it is best to optimize one's motion without any approximation of the dynamic value function, with limited computational resources and short computation time, one can at best choose the best action based on a finite horizon roll-out $a_{t:t+N-1}$ and the value estimate at the end time stamp, $\hat{V}^H_{t+N}$. Since there is uncertainty in the hidden variable $z^R$, the best action for a certain time stamp may not be consistent with those predicted at previous time frames. 
+
+Due to the uncertainty in state transitions (predictions), the optimal decision $a^{*H}$ is chosen based on the expected value of the N-horizon roll-out and value approximation at time $t+N$,
+\begin{equation}~\label{eq:N_horizon}
+a^{*H}_{t:t+N} = \argmax_{a_{t:t+N-1} \in A^H} \mathbb{E}_{x_{t+1:t+N}}\big{[}\sum_{t+1}^{t+N-1} R_t+V^H_{t+N}(x_{t+N}, b^H(z^R))\big{]},
+\end{equation}
+or some other formulation such as conditional value-at-risk (CVaR) for robust optimization. 
+
+\subsection{Discrete strategies for long-horizon planning}
+Since it is computationally expensive to solve Eq.~\ref{eq:N_horizon}, high-level \textbf{strategies} can help the search process to quickly output a good-enough plan and to replan in real-time. For example, \textit{which homotopy class to optimize over} needs to be answered, as we are solving an obstacle avoidance problem. This can be realized as to decide which agent to cross first (to pass in front of the other agent) and which to yield (to pass behind). These two high-level strategies can be treated as two classes of policies which our agents optimize among. As the two strategies separate their associated paths into two disjoint 2D spaces, the prediction of such strategies can largely eliminate the prediction error of navigation in crowded environments. Here we use those high-level strategies for value estimate of human-robot actions, to simply the study of the long-horizon continuous-space interactions into a low-dimension game.
+
+\subsection{Hypothesis}
+We propose to model human behaviors during human-robot interactions as their best responses given their hypotheses over the robot's policy. This way, when we design robot policies, we can optimize them according to the predicted human reactions; we can also design robot actions that lead to the desired equilibrium for both agents, by modeling the interaction as strategic moves for humans to best respond (in a way to maximize their own interests) to their hypothesized robot policies. With this, we can answer - when does the robot's action affect a human's strategy, and how it is affected.
 
 
 \bibliographystyle{plain}
